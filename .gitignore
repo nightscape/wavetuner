@@ -1,0 +1,8 @@
+/bin/
+/gen/
+/.cache
+/proguard_cache/
+/proguard_cache_conf/proguard_postprocessed.conf
+/libs/scala_library.min.jar
+*.log
+*.fuse_hidden*
