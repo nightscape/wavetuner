@@ -13,7 +13,7 @@ import android.widget.AdapterView
 import android.widget.AbsListView
 import org.wavetuner.programs.WaveTunerPrograms
 import java.util.ArrayList
-import org.wavetuner.programs.Program
+import org.wavetuner.programs.NeuroFeedbackProgram
 
 object ProgramListFragment {
 
@@ -39,7 +39,7 @@ class ProgramListFragment extends ListFragment {
 
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
-    setListAdapter(new ArrayAdapter[Program](getActivity, android.R.layout.simple_list_item_activated_1,
+    setListAdapter(new ArrayAdapter[NeuroFeedbackProgram](getActivity, android.R.layout.simple_list_item_activated_1,
       android.R.id.text1, WaveTunerPrograms.programs))
   }
 

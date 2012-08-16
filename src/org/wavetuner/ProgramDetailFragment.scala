@@ -10,7 +10,7 @@ import android.widget.TextView
 import ProgramDetailFragment._
 import scala.collection.JavaConversions._
 import android.widget.ImageButton
-import org.wavetuner.programs.Program
+import org.wavetuner.programs.NeuroFeedbackProgram
 
 object ProgramDetailFragment {
 
@@ -19,7 +19,7 @@ object ProgramDetailFragment {
 
 class ProgramDetailFragment extends Fragment with ListenerConversions {
 
-  var mItem: Program = _
+  var mItem: NeuroFeedbackProgram = _
 
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)

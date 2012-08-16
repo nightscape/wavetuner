@@ -3,11 +3,14 @@ import com.neurosky.thinkgear.TGDevice
 import android.os.Handler
 import android.os.Message
 import com.neurosky.thinkgear.TGEegPower
+import android.os.AsyncTask
+import android.view.View
 
-trait MeasurementSeries {
+trait MeasurementSeries extends Handler {
   def currentMeasurement: Measurement
   def registerMeasurementListener(listener: (Measurement => Unit))
   def deregisterMeasurementListener(listener: (Measurement => Unit))
+  def registerDeviceStateChangeListener(listener: (Int => Unit))
 }
 
 object EegMeasurementSeries extends Handler with MeasurementSeries {
@@ -43,14 +46,14 @@ object EegMeasurementSeries extends Handler with MeasurementSeries {
         }
         if (List(STATE_DISCONNECTED, STATE_NOT_FOUND, STATE_NOT_PAIRED, STATE_CONNECTING).contains(msg.arg1))
           resetValues()
-      case MSG_POOR_SIGNAL => log("HelloEEG", "PoorSignal: " + msg.arg1);
+      case MSG_POOR_SIGNAL => log("WaveTuner", "PoorSignal: " + msg.arg1);
       case MSG_ATTENTION => currentAttention = msg.arg1; notifyMeasurementListeners
       case MSG_MEDITATION => currentMeditation = msg.arg1; notifyMeasurementListeners
       case MSG_EEG_POWER =>
         val power = msg.obj.asInstanceOf[TGEegPower]
         currentPowers = power
         notifyMeasurementListeners
-      case _ => log("HelloEEG", "Unknown message type " + msg.what + " for " + msg);
+      case _ => ;
     }
 
   }
@@ -58,6 +61,22 @@ object EegMeasurementSeries extends Handler with MeasurementSeries {
   def notifyMeasurementListeners {
     for (listener <- measurementListeners) {
       listener(currentMeasurement)
+    }
+  }
+
+  class MeasurementUpdatesAggregatorTask extends AsyncTask[Unit, Unit, Unit] {
+    var measurementListenersUpdated = false
+    override def doInBackground(x: Unit*) {
+      Thread.sleep(200)
+    }
+
+    /**
+     * The system calls this to perform work in the UI thread and delivers
+     * the result from doInBackground()
+     */
+    override def onPostExecute(x: Unit) {
+      measurementListenersUpdated = true
+
     }
   }
 

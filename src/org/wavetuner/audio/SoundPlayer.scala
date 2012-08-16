@@ -16,6 +16,9 @@ class SoundPlayer(context: Context) {
   def setVolume(soundId:Int, volume:Float) {
     mediaPlayers.get(soundId).foreach(_.setVolume(volume, volume))
   }
+  def setVolume(volume:Float) {
+    mediaPlayers.values.foreach(_.setVolume(volume, volume))    
+  }
   def playInLoop(soundIds:Int*) {
     val players = soundIds.flatMap(mediaPlayers.get(_))
     for (mediaPlayer <- players) {
