@@ -18,7 +18,7 @@ class AudioFeedback(soundPlayer: SoundPlayer, channelToSound: Map[Int, Int]) ext
     soundPlayer.setVolume(0.0f)
   }
   def start {
-    soundPlayer.playInLoop(constantFeedbackChannels: _*)
+    soundPlayer.playInLoop(constantFeedbackChannels.flatMap {channelToSound.get(_)}: _*)
   }
   def stop {
     soundPlayer.stop

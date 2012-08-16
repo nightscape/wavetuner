@@ -12,6 +12,7 @@ class AlphaThetaProgram(measurement: MeasurementSeries, feedback: Feedback) exte
   import R.raw._
   import EegChannels._
   import FunctionHelpers._
+  feedback.constantFeedbackOn(lowAlphaChannel, thetaChannel)
   val normalizedAlpha = normalized.andThen(smoothed(0.9f))
   val normalizedTheta = normalized.andThen(smoothed(0.9f))
   val normalizedBeta = normalized.andThen(smoothed(0.9f))

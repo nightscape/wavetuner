@@ -1,12 +1,10 @@
 <resources>
 
     <string name="app_name">WaveTuner</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">WaveTuner Programs</string>
     <string name="connect_thinkgear_device">connect Thinkgear device</string>
     <string name="title_program_detail">Program Detail</string>
-    <string name="title_program_list">Programs</string>
+    <string name="title_program_list">WaveTuner</string>
     <string name="play_button">Play button</string>
 
 </resources>

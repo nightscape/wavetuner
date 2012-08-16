@@ -12,13 +12,14 @@ class AttentionMeditationProgram(measurement: MeasurementSeries, feedback: Feedb
   import R.raw._
   import FunctionHelpers._
   import EegChannels._
+  feedback.constantFeedbackOn(attentionChannel, meditationChannel)
 
   def onMeasurementChange(measurement: Measurement) {
     val attention = measurement.attention / 100.0f
     val meditation = measurement.meditation / 100.0f
     feedback.reward(attentionChannel, attention * attention)
-    feedback.reward(meditationChannel,  meditation * meditation)
-   }
+    feedback.reward(meditationChannel, meditation * meditation)
+  }
 
   override def toString = "Attention & Meditation"
 

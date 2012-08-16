@@ -34,7 +34,7 @@ object WaveTunerPrograms {
     val defaultSoundMap = scala.collection.immutable.Map(bonus -> sound_bell)
     val oneValueAudioFeedback = new AudioFeedback(soundPlayer, defaultSoundMap + (standard -> sound_unity))
     Seq(
-      new AttentionMeditationProgram(measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (lowAlphaChannel -> sound_ocean, thetaChannel -> sound_unity))),
+      new AttentionMeditationProgram(measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (meditationChannel -> sound_ocean, attentionChannel -> sound_unity))),
       new AlphaThetaProgram(measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (lowAlphaChannel -> sound_ocean, thetaChannel -> sound_unity))),
       new TrainValueProgram(measurement, oneValueAudioFeedback, _.meditation, "meditation"),
       new TrainValueProgram(measurement, oneValueAudioFeedback, _.attention, "attention"),
@@ -45,10 +45,9 @@ object WaveTunerPrograms {
       new TrainValueProgram(measurement, oneValueAudioFeedback, _.highAlpha, "low alpha"),
       new TrainValueProgram(measurement, oneValueAudioFeedback, _.lowAlpha, "low alpha"),
       new TrainValueProgram(measurement, oneValueAudioFeedback, _.theta, "theta"),
-      new TrainValueProgram(measurement, oneValueAudioFeedback, _.delta, "delta")
-    ).foreach { program =>
-      items.put(program.toString, program)
-    }
+      new TrainValueProgram(measurement, oneValueAudioFeedback, _.delta, "delta")).foreach { program =>
+        items.put(program.toString, program)
+      }
     return items
   }
 }
@@ -63,5 +62,5 @@ abstract class NeuroFeedbackProgram(val measurement: MeasurementSeries, val feed
     measurement.deregisterMeasurementListener(onMeasurementChange)
     feedback.stop
   }
-  def onMeasurementChange(measurement:Measurement)
+  def onMeasurementChange(measurement: Measurement)
 }

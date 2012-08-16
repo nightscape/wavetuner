@@ -11,6 +11,7 @@ import org.wavetuner.EegChannels
 class TrainValueProgram(measurement: MeasurementSeries, feedback:Feedback, val valueFunction:(Measurement => Float), val valueName:String) extends NeuroFeedbackProgram(measurement, feedback) {
   import FunctionHelpers._
   import EegChannels._
+  feedback.constantFeedbackOn(standard)
   val normalizer = normalized.andThen(smoothed(0.9f))
 
   def onMeasurementChange(measurement: Measurement) {
