@@ -8,8 +8,11 @@ class AudioFeedback(soundPlayer: SoundPlayer, channelToSound: Map[Int, Int]) ext
   var constantFeedbackChannels: Seq[Int] = Seq()
   soundPlayer.addSounds(channelToSound.values.toArray: _*)
 
-  def reward(channel: Int, reward: Float) {
-    channelToSound.get(channel).foreach { soundPlayer.setVolume(_, reward) }
+  def reward(channel: Int, reward: Float, onlyOnce: Boolean = false) {
+    channelToSound.get(channel).foreach { soundId =>
+      soundPlayer.setVolume(soundId, reward)
+      if(onlyOnce) soundPlayer.playOnce(soundId)
+    }
   }
   def constantFeedbackOn(channels: Int*) {
     constantFeedbackChannels = channels.toSeq
@@ -18,7 +21,7 @@ class AudioFeedback(soundPlayer: SoundPlayer, channelToSound: Map[Int, Int]) ext
     soundPlayer.setVolume(0.0f)
   }
   def start {
-    soundPlayer.playInLoop(constantFeedbackChannels.flatMap {channelToSound.get(_)}: _*)
+    soundPlayer.playInLoop(constantFeedbackChannels.flatMap { channelToSound.get(_) }: _*)
   }
   def stop {
     soundPlayer.stop

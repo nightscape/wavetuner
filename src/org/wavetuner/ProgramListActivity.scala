@@ -20,7 +20,7 @@ import org.wavetuner.audio.SoundPlayer
 class ProgramListActivity extends FragmentActivity with ProgramListFragment.Callbacks {
   import TypedResource._
   import TR._
-  val measurement = EegMeasurementSeries
+  val measurement = WaveTunerPrograms.measurement
 
   private var mTwoPane: Boolean = _
 

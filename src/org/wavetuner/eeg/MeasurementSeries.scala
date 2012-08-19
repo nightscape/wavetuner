@@ -5,20 +5,10 @@ import android.os.Message
 import com.neurosky.thinkgear.TGEegPower
 import android.os.AsyncTask
 import android.view.View
+import org.wavetuner.programs.FunctionHelpers
 
 trait MeasurementSeries extends Handler {
   def currentMeasurement: Measurement
-  def registerMeasurementListener(listener: (Measurement => Unit))
-  def deregisterMeasurementListener(listener: (Measurement => Unit))
-  def registerDeviceStateChangeListener(listener: (Int => Unit))
-}
-
-object EegMeasurementSeries extends Handler with MeasurementSeries {
-  import TGDevice._
-  var currentMeditation = 0
-  var currentAttention = 0
-  var currentPowers: TGEegPower = _
-  var currentDeviceState = STATE_DISCONNECTED
   var deviceStateChangeListeners = scala.collection.mutable.ArrayBuffer[(Int => Unit)]()
   var measurementListeners = scala.collection.mutable.ArrayBuffer[(Measurement => Unit)]()
   def registerDeviceStateChangeListener(listener: (Int => Unit)) {
@@ -30,6 +20,21 @@ object EegMeasurementSeries extends Handler with MeasurementSeries {
   def deregisterMeasurementListener(listener: (Measurement => Unit)) {
     measurementListeners -= listener
   }
+  def notifyMeasurementListeners {
+    val measurement = currentMeasurement
+    for (listener <- measurementListeners) {
+      listener(measurement)
+    }
+  }
+
+}
+
+class EegMeasurementSeries extends Handler with MeasurementSeries {
+  import TGDevice._
+  var currentMeditation = 0
+  var currentAttention = 0
+  var currentPowers: TGEegPower = _
+  var currentDeviceState = STATE_DISCONNECTED
   def log(l: String, s: String) { println(s) }
   def resetValues() {
     currentMeditation = 0
@@ -46,7 +51,6 @@ object EegMeasurementSeries extends Handler with MeasurementSeries {
         }
         if (List(STATE_DISCONNECTED, STATE_NOT_FOUND, STATE_NOT_PAIRED, STATE_CONNECTING).contains(msg.arg1))
           resetValues()
-      case MSG_POOR_SIGNAL => log("WaveTuner", "PoorSignal: " + msg.arg1);
       case MSG_ATTENTION => currentAttention = msg.arg1; notifyMeasurementListeners
       case MSG_MEDITATION => currentMeditation = msg.arg1; notifyMeasurementListeners
       case MSG_EEG_POWER =>
@@ -58,11 +62,6 @@ object EegMeasurementSeries extends Handler with MeasurementSeries {
 
   }
 
-  def notifyMeasurementListeners {
-    for (listener <- measurementListeners) {
-      listener(currentMeasurement)
-    }
-  }
 
   class MeasurementUpdatesAggregatorTask extends AsyncTask[Unit, Unit, Unit] {
     var measurementListenersUpdated = false
@@ -79,17 +78,26 @@ object EegMeasurementSeries extends Handler with MeasurementSeries {
 
     }
   }
-
+  import FunctionHelpers._
+  val smoothingFactor = 0.9f
+  val deltaNormalizer = normalizer(smoothingFactor)
+  val thetaNormalizer = normalizer(smoothingFactor)
+  val lowAlphaNormalizer = normalizer(smoothingFactor)
+  val highAlphaNormalizer = normalizer(smoothingFactor)
+  val lowBetaNormalizer = normalizer(smoothingFactor)
+  val highBetaNormalizer = normalizer(smoothingFactor)
+  val lowGammaNormalizer = normalizer(smoothingFactor)
+  val midGammaNormalizer = normalizer(smoothingFactor)
   override def currentMeasurement = new Measurement(
     meditation = currentMeditation,
     attention = currentAttention,
-    delta = currentPowers.delta,
-    theta = currentPowers.theta,
-    lowAlpha = currentPowers.lowAlpha,
-    highAlpha = currentPowers.highAlpha,
-    lowBeta = currentPowers.lowBeta,
-    highBeta = currentPowers.highBeta,
-    lowGamma = currentPowers.lowGamma,
-    midGamma = currentPowers.midGamma)
+    delta = deltaNormalizer(currentPowers.delta),
+    theta = thetaNormalizer(currentPowers.theta),
+    lowAlpha = lowAlphaNormalizer(currentPowers.lowAlpha),
+    highAlpha = highAlphaNormalizer(currentPowers.highAlpha),
+    lowBeta = lowBetaNormalizer(currentPowers.lowBeta),
+    highBeta = highBetaNormalizer(currentPowers.highBeta),
+    lowGamma = lowGammaNormalizer(currentPowers.lowGamma),
+    midGamma = midGammaNormalizer(currentPowers.midGamma))
 }
 

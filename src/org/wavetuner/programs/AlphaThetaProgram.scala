@@ -12,21 +12,21 @@ class AlphaThetaProgram(measurement: MeasurementSeries, feedback: Feedback) exte
   import R.raw._
   import EegChannels._
   import FunctionHelpers._
-  feedback.constantFeedbackOn(lowAlphaChannel, thetaChannel)
-  val normalizedAlpha = normalized.andThen(smoothed(0.9f))
-  val normalizedTheta = normalized.andThen(smoothed(0.9f))
-  val normalizedBeta = normalized.andThen(smoothed(0.9f))
+  feedback.constantFeedbackOn(lowAlphaChannel, thetaChannel, lowBetaChannel)
+  val smoothingFactor = 0.9f
+  val normalizedAlpha = smoothed(smoothingFactor)
+  val normalizedTheta = smoothed(smoothingFactor)
+  val normalizedBeta = smoothed(smoothingFactor)
 
   def onMeasurementChange(measurement: Measurement) {
     val beta = normalizedBeta(measurement.lowBeta)
     val alpha = normalizedAlpha(measurement.lowAlpha)
     val theta = normalizedTheta(measurement.theta)
-    val pureAlpha = Seq(alpha-beta, 0).max
-    val pureTheta = Seq(theta-beta, 0).max
-    feedback.reward(lowAlphaChannel, pureAlpha)
-    feedback.reward(thetaChannel,  pureTheta)
-    if (pureAlpha > 0 && pureTheta > pureAlpha)
-      feedback.reward(bonus, 1.0f)
+    feedback.reward(lowAlphaChannel, Seq(2 * alpha - 1, 0).max)
+    feedback.reward(thetaChannel, Seq(2 * theta - 1, 0).max)
+    feedback.reward(lowBetaChannel, Seq(1 - 2 * beta, 0).max)
+    if (alpha > 0.7 && theta > alpha && alpha > beta)
+      feedback.reward(bonus, 1.0f, onlyOnce = true)
   }
 
   override def toString = "Alpha-Theta"

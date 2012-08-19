@@ -4,11 +4,10 @@ import android.os.Handler
 import android.os.Message
 import scala.util.Random
 
-class MockMeasurementSeries extends Handler {
-  def registerDeviceStateChangeListener(listener: (Int => Unit)) {
-  }
+class MockMeasurementSeries extends Handler with MeasurementSeries {
   override def handleMessage(msg: Message) {
+    notifyMeasurementListeners
   }
-  def currentMeasurement = new Measurement(Random.nextInt, Random.nextInt)
+  def currentMeasurement = new Measurement(Random.nextInt, Random.nextInt, Random.nextFloat, Random.nextFloat, Random.nextFloat, Random.nextFloat, Random.nextFloat, Random.nextFloat)
 }
 
