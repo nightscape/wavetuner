@@ -1,4 +1,4 @@
-package org.wavetuner.audio
+package org.wavetuner.feedback.audio
 
 import org.wavetuner.feedback.Feedback
 import org.wavetuner.R

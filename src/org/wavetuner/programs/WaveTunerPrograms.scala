@@ -5,15 +5,14 @@ import java.util.ArrayList
 import java.util.LinkedHashMap
 import java.util.List
 import java.util.Map
-import org.wavetuner.audio.SoundPlayer
+import org.wavetuner.feedback.audio.SoundPlayer
 import org.wavetuner.eeg.EegMeasurementSeries
 import org.wavetuner.eeg.MeasurementSeries
 import org.wavetuner.eeg.Measurement
 import org.wavetuner.feedback.Feedback
-import org.wavetuner.audio.AudioFeedback
+import org.wavetuner.feedback.audio.AudioFeedback
 import org.wavetuner.R
 import org.wavetuner.EegChannels
-import org.wavetuner.audio.AudioFeedback
 import org.wavetuner.eeg.MockMeasurementSeries
 
 object WaveTunerPrograms {

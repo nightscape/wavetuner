@@ -16,4 +16,15 @@ object FunctionHelpers {
       v / currentMaximum
     }
   }
+  def temporalDevelopment(shortTermSmoothingFactor: Float = 0.9f, longTermSmoothingFactor: Float = 0.99f) = new Function1[Float, Float] {
+    val shortTermSmoothing = smoothed(shortTermSmoothingFactor)
+    val longTermSmoothing = smoothed(longTermSmoothingFactor)
+    def apply(v: Float): Float = {
+      (shortTermSmoothing(v) + 0.000001f) / (longTermSmoothing(v) + 0.000001f)
+    }
+
+  }
+  def logistic(v:Float) = {
+    (1.0 / (1 + Math.exp(-v)));
+  }
 }

@@ -15,7 +15,7 @@ import android.view.View
 import android.media.AudioManager
 import org.wavetuner.eeg.EegMeasurementSeries
 import org.wavetuner.programs.WaveTunerPrograms
-import org.wavetuner.audio.SoundPlayer
+import org.wavetuner.feedback.audio.SoundPlayer
 
 class ProgramListActivity extends FragmentActivity with ProgramListFragment.Callbacks {
   import TypedResource._

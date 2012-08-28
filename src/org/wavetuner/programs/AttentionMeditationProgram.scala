@@ -1,7 +1,7 @@
 package org.wavetuner.programs
 
 import org.wavetuner.eeg.MeasurementSeries
-import org.wavetuner.audio.SoundPlayer
+import org.wavetuner.feedback.audio.SoundPlayer
 import org.wavetuner.R
 import android.util.Log
 import org.wavetuner.eeg.Measurement

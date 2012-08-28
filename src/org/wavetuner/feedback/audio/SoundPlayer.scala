@@ -1,4 +1,4 @@
-package org.wavetuner.audio
+package org.wavetuner.feedback.audio
 
 import android.media.SoundPool
 import android.media.AudioManager

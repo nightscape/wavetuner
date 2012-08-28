@@ -1,5 +1,11 @@
 package org.wavetuner.eeg
 
+import scala.util.Random
+
+object Measurement {
+  def random:Measurement = new Measurement(Random.nextInt,Random.nextInt,Random.nextFloat,Random.nextFloat,Random.nextFloat,Random.nextFloat,Random.nextFloat,Random.nextFloat,Random.nextFloat,Random.nextFloat)
+}
+
 case class Measurement(
   val meditation: Int = 0,
   val attention: Int = 0,
