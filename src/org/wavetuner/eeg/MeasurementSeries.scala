@@ -9,8 +9,10 @@ import org.wavetuner.programs.FunctionHelpers
 
 trait MeasurementSeries extends Handler {
   def currentMeasurement: Measurement
+  def currentRawValue: Int
   var deviceStateChangeListeners = scala.collection.mutable.ArrayBuffer[(Int => Unit)]()
   var measurementListeners = scala.collection.mutable.ArrayBuffer[(Measurement => Unit)]()
+  var rawDataListeners = scala.collection.mutable.ArrayBuffer[(Int => Unit)]()
   def registerDeviceStateChangeListener(listener: (Int => Unit)) {
     deviceStateChangeListeners :+= listener
   }
@@ -20,13 +22,22 @@ trait MeasurementSeries extends Handler {
   def deregisterMeasurementListener(listener: (Measurement => Unit)) {
     measurementListeners -= listener
   }
-  def notifyMeasurementListeners {
-    val measurement = currentMeasurement
+  def notifyMeasurementListeners(measurement:Measurement=currentMeasurement) {
     for (listener <- measurementListeners) {
       listener(measurement)
     }
   }
-
+  def registerRawDataListener(listener: (Int => Unit)) {
+    rawDataListeners :+= listener
+  }
+  def deregisterRawDataListener(listener: (Int => Unit)) {
+    rawDataListeners -= listener
+  }
+  def notifyRawDataListeners(rawValue:Int=currentRawValue) {
+    for (listener <- rawDataListeners) {
+      listener(rawValue)
+    }
+  }
 }
 
 class EegMeasurementSeries extends Handler with MeasurementSeries {
@@ -34,13 +45,14 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
   var currentMeditation = 0
   var currentAttention = 0
   var currentPowers: TGEegPower = _
+  var currentRawValue = 0
   var currentDeviceState = STATE_DISCONNECTED
   def log(l: String, s: String) { println(s) }
   def resetValues() {
     currentMeditation = 0
     currentAttention = 0
     currentPowers = new TGEegPower()
-    notifyMeasurementListeners
+    notifyMeasurementListeners()
   }
   override def handleMessage(msg: Message) {
     msg.what match {
@@ -51,12 +63,15 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
         }
         if (List(STATE_DISCONNECTED, STATE_NOT_FOUND, STATE_NOT_PAIRED, STATE_CONNECTING).contains(msg.arg1))
           resetValues()
-      case MSG_ATTENTION => currentAttention = msg.arg1; notifyMeasurementListeners
-      case MSG_MEDITATION => currentMeditation = msg.arg1; notifyMeasurementListeners
+      case MSG_ATTENTION => currentAttention = msg.arg1; notifyMeasurementListeners()
+      case MSG_MEDITATION => currentMeditation = msg.arg1; notifyMeasurementListeners()
       case MSG_EEG_POWER =>
         val power = msg.obj.asInstanceOf[TGEegPower]
         currentPowers = power
-        notifyMeasurementListeners
+        notifyMeasurementListeners()
+      case MSG_RAW_DATA =>
+        currentRawValue = msg.arg1
+        notifyRawDataListeners(currentRawValue)
       case _ => ;
     }
 
@@ -98,6 +113,7 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
     lowBeta = lowBetaNormalizer(currentPowers.lowBeta),
     highBeta = highBetaNormalizer(currentPowers.highBeta),
     lowGamma = lowGammaNormalizer(currentPowers.lowGamma),
-    midGamma = midGammaNormalizer(currentPowers.midGamma))
+    midGamma = midGammaNormalizer(currentPowers.midGamma),
+    powers = currentPowers)
 }
 

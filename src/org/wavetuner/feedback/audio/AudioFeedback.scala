@@ -3,9 +3,9 @@ package org.wavetuner.feedback.audio
 import org.wavetuner.feedback.Feedback
 import org.wavetuner.R
 
-class AudioFeedback(soundPlayer: SoundPlayer, channelToSound: Map[Int, Int]) extends Feedback {
+class AudioFeedback(soundPlayer: SoundPlayer, channelToSound: Map[Int, Int], _constantFeedbackChannels:Int*) extends Feedback {
   import R.raw._
-  var constantFeedbackChannels: Seq[Int] = Seq()
+  var constantFeedbackChannels:Seq[Int] = _constantFeedbackChannels.toSeq
   soundPlayer.addSounds(channelToSound.values.toArray: _*)
 
   def reward(channel: Int, reward: Float, onlyOnce: Boolean = false) {
@@ -15,7 +15,7 @@ class AudioFeedback(soundPlayer: SoundPlayer, channelToSound: Map[Int, Int]) ext
     }
   }
   def constantFeedbackOn(channels: Int*) {
-    constantFeedbackChannels = channels.toSeq
+    constantFeedbackChannels = channels
   }
   def none {
     soundPlayer.setVolume(0.0f)
