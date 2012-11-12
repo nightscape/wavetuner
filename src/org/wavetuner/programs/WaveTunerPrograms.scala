@@ -20,6 +20,7 @@ import org.wavetuner.programs.evaluations.SimpleAlphaThetaProgram
 import org.wavetuner.programs.evaluations.SingleValueRewardEvaluation
 import org.wavetuner.programs.evaluations.Evaluation
 import scala.collection.JavaConversions._
+import scala.collection.immutable.ListMap
 
 object WaveTunerPrograms {
   import R._
@@ -38,7 +39,7 @@ object WaveTunerPrograms {
   def programs(soundPlayer: SoundPlayer): Map[String, NeuroFeedbackProgram] = {
     val defaultSoundMap = scala.collection.immutable.Map(bonus -> sound_bell)
     val oneValueAudioFeedback = new AudioFeedback(soundPlayer, defaultSoundMap + (standard -> sound_unity))
-    oneValueAudioFeedback.constantFeedbackChannels(standard)
+    oneValueAudioFeedback.constantFeedbackOn(standard)
     val programs = List(
       new NeuroFeedbackProgram(new AttentionMeditationEvaluation, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (meditationChannel -> sound_ocean, attentionChannel -> sound_unity), attentionChannel, meditationChannel)),
       new NeuroFeedbackProgram(new AlphaThetaEvaluation, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (lowAlphaChannel -> sound_ocean, thetaChannel -> sound_unity, lowBetaChannel -> sound_brooks), lowAlphaChannel, thetaChannel, lowBetaChannel)),
@@ -53,6 +54,6 @@ object WaveTunerPrograms {
         new SingleValueRewardEvaluation(_.lowAlpha, "Low Alpha"),
         new SingleValueRewardEvaluation(_.theta, "Theta"),
         new SingleValueRewardEvaluation(_.delta, "Delta")).map(evaluation => new NeuroFeedbackProgram(evaluation, measurement, oneValueAudioFeedback))
-    new LinkedHashMap[String, NeuroFeedbackProgram](programs.map(p => (p.toString, p)).toMap)
+    new LinkedHashMap[String, NeuroFeedbackProgram](ListMap.empty ++ programs.map(p => (p.toString, p)))
   }
 }
