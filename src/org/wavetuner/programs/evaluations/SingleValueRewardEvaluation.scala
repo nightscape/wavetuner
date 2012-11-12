@@ -9,11 +9,11 @@ class SingleValueRewardEvaluation(val valueFunction: (Measurement => Float), val
   val smoother = smoothed(0.9f)
 
   def apply(measurement: Measurement): List[Reward] = {
-    val desiredValue = valueFunction(measurement)
+    val desiredShortTermValue = valueFunction(measurement)
     val maximumOfAllValues = measurement.maximumFrequencyPower
-    val power = smoother(Seq(desiredValue / maximumOfAllValues, 0).max)
-    List(Reward(standard, power)) ++
-      (if (power > 0.8) List(Reward(bonus, power, onlyOnce = true)) else Nil)
+    val desiredLongTermValue = smoother(Seq(desiredShortTermValue / maximumOfAllValues, 0).max)
+    List(Reward(standard, desiredLongTermValue)) ++
+      (if (desiredShortTermValue > desiredLongTermValue) List(Reward(bonus, desiredShortTermValue, onlyOnce = true)) else Nil)
   }
 
   override def toString = "Increase " + valueName
