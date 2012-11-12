@@ -22,7 +22,7 @@ trait MeasurementSeries extends Handler {
   def deregisterMeasurementListener(listener: (Measurement => Unit)) {
     measurementListeners -= listener
   }
-  def notifyMeasurementListeners(measurement:Measurement=currentMeasurement) {
+  def notifyMeasurementListeners(measurement: Measurement = currentMeasurement) {
     for (listener <- measurementListeners) {
       listener(measurement)
     }
@@ -33,7 +33,7 @@ trait MeasurementSeries extends Handler {
   def deregisterRawDataListener(listener: (Int => Unit)) {
     rawDataListeners -= listener
   }
-  def notifyRawDataListeners(rawValue:Int=currentRawValue) {
+  def notifyRawDataListeners(rawValue: Int = currentRawValue) {
     for (listener <- rawDataListeners) {
       listener(rawValue)
     }
@@ -63,8 +63,10 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
         }
         if (List(STATE_DISCONNECTED, STATE_NOT_FOUND, STATE_NOT_PAIRED, STATE_CONNECTING).contains(msg.arg1))
           resetValues()
-      case MSG_ATTENTION => currentAttention = msg.arg1; notifyMeasurementListeners()
-      case MSG_MEDITATION => currentMeditation = msg.arg1; notifyMeasurementListeners()
+      case MSG_ATTENTION =>
+        currentAttention = msg.arg1; notifyMeasurementListeners()
+      case MSG_MEDITATION =>
+        currentMeditation = msg.arg1; notifyMeasurementListeners()
       case MSG_EEG_POWER =>
         val power = msg.obj.asInstanceOf[TGEegPower]
         currentPowers = power
@@ -76,7 +78,6 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
     }
 
   }
-
 
   class MeasurementUpdatesAggregatorTask extends AsyncTask[Unit, Unit, Unit] {
     var measurementListenersUpdated = false

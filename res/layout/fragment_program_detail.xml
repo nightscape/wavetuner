@@ -18,6 +18,12 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="0dip"
 	    android:layout_margin="10dip"
+	    android:layout_weight="3" />
+
+	<org.wavetuner.feedback.visual.EegRawDataVisualizationView
+	    android:layout_width="match_parent"
+	    android:layout_height="0dip"
+	    android:layout_margin="10dip"
 	    android:layout_weight="1" />
 
     <LinearLayout

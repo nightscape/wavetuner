@@ -16,6 +16,8 @@ import android.media.AudioManager
 import org.wavetuner.eeg.EegMeasurementSeries
 import org.wavetuner.programs.WaveTunerPrograms
 import org.wavetuner.feedback.audio.SoundPlayer
+import org.wavetuner.eeg.MockMeasurementSeries
+import org.wavetuner.eeg.EegMeasurementSeries
 
 class ProgramListActivity extends FragmentActivity with ProgramListFragment.Callbacks {
   import TypedResource._
@@ -57,6 +59,14 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
   override def onOptionsItemSelected(item: android.view.MenuItem): Boolean = {
     item.getItemId() match {
       case R.id.menu_connect_thinkgear => connectThinkgearDevice(item); true
+      case R.id.menu_use_mock_device =>
+        WaveTunerPrograms.measurement = if (item.isChecked()) {
+          new MockMeasurementSeries
+        } else {
+          new EegMeasurementSeries
+        }
+        item.setChecked(!item.isChecked())
+        true
       case _ => super.onOptionsItemSelected(item)
     }
   }
@@ -68,7 +78,7 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
         if (newState == TGDevice.STATE_CONNECTED)
           tgDevice.start()
       }
-      tgDevice.connect(false)
+      tgDevice.connect(true)
     }
   }
   implicit def function2ViewOnItemClickListener[T <: android.widget.Adapter](f: (AdapterView[_], View, Int, Long) => Unit): AdapterView.OnItemClickListener = {

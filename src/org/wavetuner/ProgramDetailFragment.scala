@@ -11,6 +11,7 @@ import ProgramDetailFragment._
 import scala.collection.JavaConversions._
 import android.widget.ImageButton
 import org.wavetuner.programs.NeuroFeedbackProgram
+import android.view.WindowManager
 
 object ProgramDetailFragment {
 
@@ -40,10 +41,12 @@ class ProgramDetailFragment extends Fragment with ListenerConversions {
     btnPlay.setOnClickListener { v: View =>
       if (!isRunning) {
         btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.img_btn_pause))
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mItem.run
         isRunning = true
       } else {
         btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.img_btn_play))
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mItem.stop
         isRunning = false
       }

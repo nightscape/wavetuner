@@ -7,7 +7,7 @@
         android:title="Connect to Thinkgear device"
         android:titleCondensed="Connect">
     </item>
-    <item
+    <item android:id="@+id/menu_use_mock_device" android:checkable="true" android:title="Use mock device"></item><item
         android:id="@+id/menu_settings"
         android:orderInCategory="100"
         android:showAsAction="never"
