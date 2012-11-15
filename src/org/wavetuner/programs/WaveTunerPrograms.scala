@@ -35,6 +35,7 @@ object WaveTunerPrograms {
     programs = new ArrayList(programsByName.values)
     programNames = new ArrayList(programsByName.keySet())
   }
+  val co = new ConsoleObserver
 
   def programs(soundPlayer: SoundPlayer): Map[String, NeuroFeedbackProgram] = {
     val defaultSoundMap = scala.collection.immutable.Map(bonus -> sound_bell)
@@ -57,3 +58,13 @@ object WaveTunerPrograms {
     new LinkedHashMap[String, NeuroFeedbackProgram](ListMap.empty ++ programs.map(p => (p.toString, p)))
   }
 }
+
+import org.wavetuner.eeg.AndroidDomain._
+class ConsoleObserver extends Observing {
+  println("********************************* OBSERVER *******************************")
+  println(WaveTunerPrograms.measurement.measurements)
+  observe(WaveTunerPrograms.measurement.measurements) {measurement =>
+    println(measurement)
+  }
+}
+
