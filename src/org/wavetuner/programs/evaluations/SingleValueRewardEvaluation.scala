@@ -4,14 +4,16 @@ import org.wavetuner.feedback.Reward
 import org.wavetuner.EegChannels.bonus
 import org.wavetuner.EegChannels.standard
 import org.wavetuner.programs.FunctionHelpers._
+import org.wavetuner.eeg.TimeSeries
 
-class SingleValueRewardEvaluation(val valueFunction: (Measurement => Float), val valueName: String) extends Evaluation {
+class SingleValueRewardEvaluation(val valueFunction: (Measurement => TimeSeries), val valueName: String) extends Evaluation {
   val smoother = smoothed(0.9f)
 
   def apply(measurement: Measurement): List[Reward] = {
-    val desiredShortTermValue = valueFunction(measurement)
+    val series = valueFunction(measurement)
+    val desiredShortTermValue = series.current
     val maximumOfAllValues = measurement.maximumFrequencyPower
-    val desiredLongTermValue = smoother(Seq(desiredShortTermValue / maximumOfAllValues, 0).max)
+    val desiredLongTermValue = series.longTerm//smoother(Seq(desiredShortTermValue / maximumOfAllValues, 0).max)
     List(Reward(standard, desiredLongTermValue)) ++
       (if (desiredShortTermValue > desiredLongTermValue) List(Reward(bonus, desiredShortTermValue, onlyOnce = true)) else Nil)
   }

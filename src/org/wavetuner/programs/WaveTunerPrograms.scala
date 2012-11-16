@@ -44,16 +44,16 @@ object WaveTunerPrograms {
       new NeuroFeedbackProgram(new AttentionMeditationEvaluation, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (meditationChannel -> sound_ocean, attentionChannel -> sound_unity), attentionChannel, meditationChannel)),
       new NeuroFeedbackProgram(new AlphaThetaEvaluation, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (lowAlphaChannel -> sound_ocean, thetaChannel -> sound_unity, lowBetaChannel -> sound_brooks), lowAlphaChannel, thetaChannel, lowBetaChannel)),
       new NeuroFeedbackProgram(new SimpleAlphaThetaProgram, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (lowAlphaChannel -> sound_ocean, thetaChannel -> sound_unity, lowBetaChannel -> sound_brooks), lowAlphaChannel, thetaChannel, lowBetaChannel))) ++ List(
-        new SingleValueRewardEvaluation(_.meditation, "Meditation"),
-        new SingleValueRewardEvaluation(_.attention, "Attention"),
-        new SingleValueRewardEvaluation(_.midGamma, "Mid Gamma"),
-        new SingleValueRewardEvaluation(_.lowGamma, "Low Gamma"),
-        new SingleValueRewardEvaluation(_.highBeta, "High Beta"),
-        new SingleValueRewardEvaluation(_.lowBeta, "Low Beta"),
-        new SingleValueRewardEvaluation(_.highAlpha, "High Alpha"),
-        new SingleValueRewardEvaluation(_.lowAlpha, "Low Alpha"),
-        new SingleValueRewardEvaluation(_.theta, "Theta"),
-        new SingleValueRewardEvaluation(_.delta, "Delta")).map(evaluation => new NeuroFeedbackProgram(evaluation, measurement, oneValueAudioFeedback))
+        new SingleValueRewardEvaluation(_.meditationMeasure, "Meditation"),
+        new SingleValueRewardEvaluation(_.attentionMeasure, "Attention"),
+        new SingleValueRewardEvaluation(_.midGammaMeasure, "Mid Gamma"),
+        new SingleValueRewardEvaluation(_.lowGammaMeasure, "Low Gamma"),
+        new SingleValueRewardEvaluation(_.highBetaMeasure, "High Beta"),
+        new SingleValueRewardEvaluation(_.lowBetaMeasure, "Low Beta"),
+        new SingleValueRewardEvaluation(_.highAlphaMeasure, "High Alpha"),
+        new SingleValueRewardEvaluation(_.lowAlphaMeasure, "Low Alpha"),
+        new SingleValueRewardEvaluation(_.thetaMeasure, "Theta"),
+        new SingleValueRewardEvaluation(_.deltaMeasure, "Delta")).map(evaluation => new NeuroFeedbackProgram(evaluation, measurement, oneValueAudioFeedback))
     new LinkedHashMap[String, NeuroFeedbackProgram](ListMap.empty ++ programs.map(p => (p.toString, p)))
   }
 }

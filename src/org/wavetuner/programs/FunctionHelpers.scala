@@ -1,5 +1,13 @@
 package org.wavetuner.programs
+trait ProgressingFunction[T] extends Function0[T] {
+  def progress(newValue: T): ProgressingFunction[T]
+}
 
+case class SmoothingFunction(val currentValue: Float, val smoothingFactor: Float) extends ProgressingFunction[Float] {
+  def apply = currentValue
+  def progress(newValue: Float) =
+    SmoothingFunction((1 - smoothingFactor) * newValue + smoothingFactor * currentValue, smoothingFactor)
+}
 object FunctionHelpers {
   def smoothed(smoothingFactor: Float) = new Function1[Float, Float] {
     var currentValue: Float = 0
@@ -24,7 +32,7 @@ object FunctionHelpers {
     }
 
   }
-  def logistic(v:Float) = {
+  def logistic(v: Float) = {
     (1.0 / (1 + Math.exp(-v)));
   }
 }
