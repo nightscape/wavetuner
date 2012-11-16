@@ -27,13 +27,11 @@ object WaveTunerPrograms {
   import R.raw._
   import EegChannels._
   var programsByName: Map[String, NeuroFeedbackProgram] = _
-  var programs: JList[NeuroFeedbackProgram] = _
-  var programNames: JList[String] = _
+  def programs: JList[NeuroFeedbackProgram] = new ArrayList(programsByName.values)
+  def programNames: JList[String]  = new ArrayList(programsByName.keySet())
   var measurement: MeasurementSeries = new EegMeasurementSeries
   def initialize(soundPlayer: SoundPlayer) {
     programsByName = programs(soundPlayer)
-    programs = new ArrayList(programsByName.values)
-    programNames = new ArrayList(programsByName.keySet())
   }
 
   def programs(soundPlayer: SoundPlayer): Map[String, NeuroFeedbackProgram] = {
