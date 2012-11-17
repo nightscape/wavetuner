@@ -1,26 +1,31 @@
 package org.wavetuner.programs
 
-import java.lang.Runnable
 import java.util.ArrayList
 import java.util.LinkedHashMap
-import java.util.{ List => JList }
+import java.util.{List => JList}
 import java.util.Map
-import org.wavetuner.feedback.audio.SoundPlayer
+import scala.collection.JavaConversions.mapAsJavaMap
+import scala.collection.immutable.ListMap
+import org.wavetuner.EegChannels.attentionChannel
+import org.wavetuner.EegChannels.bonus
+import org.wavetuner.EegChannels.lowAlphaChannel
+import org.wavetuner.EegChannels.lowBetaChannel
+import org.wavetuner.EegChannels.meditationChannel
+import org.wavetuner.EegChannels.standard
+import org.wavetuner.EegChannels.thetaChannel
+import org.wavetuner.R
+import org.wavetuner.R.raw.sound_bell
+import org.wavetuner.R.raw.sound_brooks
+import org.wavetuner.R.raw.sound_ocean
+import org.wavetuner.R.raw.sound_unity
 import org.wavetuner.eeg.EegMeasurementSeries
 import org.wavetuner.eeg.MeasurementSeries
-import org.wavetuner.eeg.Measurement
-import org.wavetuner.feedback.Feedback
 import org.wavetuner.feedback.audio.AudioFeedback
-import org.wavetuner.R
-import org.wavetuner.EegChannels
-import org.wavetuner.eeg.MockMeasurementSeries
-import org.wavetuner.programs.evaluations.AlphaThetaEvaluation
+import org.wavetuner.feedback.audio.SoundPlayer
 import org.wavetuner.programs.evaluations.AttentionMeditationEvaluation
 import org.wavetuner.programs.evaluations.SimpleAlphaThetaProgram
 import org.wavetuner.programs.evaluations.SingleValueRewardEvaluation
-import org.wavetuner.programs.evaluations.Evaluation
-import scala.collection.JavaConversions._
-import scala.collection.immutable.ListMap
+import org.wavetuner.EegChannels
 
 object WaveTunerPrograms {
   import R._
@@ -40,7 +45,6 @@ object WaveTunerPrograms {
     oneValueAudioFeedback.constantFeedbackOn(standard)
     val programs = List(
       new NeuroFeedbackProgram(new AttentionMeditationEvaluation, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (meditationChannel -> sound_ocean, attentionChannel -> sound_unity), attentionChannel, meditationChannel)),
-      new NeuroFeedbackProgram(new AlphaThetaEvaluation, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (lowAlphaChannel -> sound_ocean, thetaChannel -> sound_unity, lowBetaChannel -> sound_brooks), lowAlphaChannel, thetaChannel, lowBetaChannel)),
       new NeuroFeedbackProgram(new SimpleAlphaThetaProgram, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (lowAlphaChannel -> sound_ocean, thetaChannel -> sound_unity, lowBetaChannel -> sound_brooks), lowAlphaChannel, thetaChannel, lowBetaChannel))) ++ List(
         new SingleValueRewardEvaluation(_.meditationMeasure, "Meditation"),
         new SingleValueRewardEvaluation(_.attentionMeasure, "Attention"),

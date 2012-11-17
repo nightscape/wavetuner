@@ -8,8 +8,8 @@ import org.wavetuner.R
 class AttentionMeditationEvaluation extends Evaluation {
 
   def apply(measurement: Measurement): List[Reward] = {
-    val attention = measurement.attention / 100.0f
-    val meditation = measurement.meditation / 100.0f
+    val attention = measurement.attention
+    val meditation = measurement.meditation
     List(Reward(attentionChannel, attention * attention), Reward(meditationChannel, meditation * meditation))
   }
 

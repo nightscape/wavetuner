@@ -10,13 +10,15 @@ import scala.math._
 class SimpleAlphaThetaProgram extends Evaluation {
 
   def apply(measurement: Measurement): List[Reward] = {
-    val alpha = measurement.powers.lowAlpha
-    val theta = measurement.powers.theta
-    val maxPower = measurement.maximumAbsolutePower
-    val relativeAlpha = alpha.toFloat / maxPower
-    val relativeTheta = theta.toFloat / maxPower
+    val alpha = measurement.lowAlphaMeasure
+    val theta = measurement.thetaMeasure
+    val relativeAlpha = alpha.currentRelativeToMaxPower
+    val relativeTheta = theta.currentRelativeToMaxPower
     List(Reward(lowAlphaChannel, relativeAlpha), Reward(thetaChannel, relativeTheta)) ++
-      (if (relativeAlpha > 0.7 && relativeTheta > 0.7) List(Reward(bonus, 1.0f, onlyOnce = true)) else Nil)
+      (if (relativeAlpha > 0.7 && relativeTheta > 0.7)
+        List(Reward(bonus, 1.0f, onlyOnce = true))
+      else
+        Nil)
   }
 
   override def toString = "Simple Alpha-Theta"

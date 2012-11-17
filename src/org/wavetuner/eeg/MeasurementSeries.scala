@@ -60,9 +60,9 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
         if (List(STATE_DISCONNECTED, STATE_NOT_FOUND, STATE_NOT_PAIRED, STATE_CONNECTING).contains(msg.arg1))
           resetValues()
       case MSG_ATTENTION =>
-        currentMeasurement = currentMeasurement.progress(attention=msg.arg1); notifyMeasurementListeners()
+        currentMeasurement = currentMeasurement.progress(attention=msg.arg1/100.0f); notifyMeasurementListeners()
       case MSG_MEDITATION =>
-        currentMeasurement = currentMeasurement.progress(meditation=msg.arg1); notifyMeasurementListeners()
+        currentMeasurement = currentMeasurement.progress(meditation=msg.arg1/100.0f); notifyMeasurementListeners()
       case MSG_EEG_POWER =>
         val power = msg.obj.asInstanceOf[TGEegPower]
         currentMeasurement = currentMeasurement.progress(powers=power)
