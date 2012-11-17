@@ -4,6 +4,7 @@ import scala.util.Random
 import com.neurosky.thinkgear.TGEegPower
 import org.wavetuner.programs.FunctionHelpers._
 import org.wavetuner.programs.SmoothingFunction
+import org.wavetuner.programs.NormalizeByHistory
 
 object Measurement {
   def random: Measurement = new Measurement(
@@ -16,13 +17,34 @@ object Measurement {
     TimeSeries(Random.nextFloat),
     TimeSeries(Random.nextFloat),
     TimeSeries(Random.nextFloat),
-    TimeSeries(Random.nextFloat))
+    TimeSeries(Random.nextFloat), new TGEegPower)
 }
 
-case class TimeSeries(val current: Float = 0, val smoothing: SmoothingFunction = SmoothingFunction(0, 0.9f)) {
-  def progress(newValue: Float): TimeSeries = TimeSeries(newValue, smoothing.progress(newValue))
-  def longTerm: Float = smoothing()
+class RichTGEegPower(val powers:TGEegPower) {
+  lazy val allFrequencyPowers: Array[Float] =
+    Array(powers.delta, powers.theta, powers.lowAlpha, powers.highAlpha, powers.lowBeta, powers.highBeta, powers.lowGamma, powers.midGamma)
+  def maximumFrequencyPower = allFrequencyPowers.max
+}
 
+object EegHelpers {
+  implicit def toRichTGEegPower(powers:TGEegPower) = new RichTGEegPower(powers)
+}
+import EegHelpers._
+case class TimeSeries(
+    val current: Float = 0,
+    val powers: TGEegPower = new TGEegPower,
+    val smoothing: SmoothingFunction = SmoothingFunction(0, 0.9f),
+    val historyNormalized:NormalizeByHistory = NormalizeByHistory(0.0f,0.000001f),
+    val relativePowerSmoothing: SmoothingFunction = SmoothingFunction(0,0.9f)
+  ) {
+  def progress(newValue: Float, powers:TGEegPower = this.powers): TimeSeries =
+    TimeSeries(newValue, powers, smoothing.progress(newValue), historyNormalized.progress(newValue), relativePowerSmoothing.progress(newValue / powers.maximumFrequencyPower))
+  lazy val allFrequencyPowers: Array[Float] = powers.allFrequencyPowers
+  lazy val maximumFrequencyPower: Float = powers.maximumFrequencyPower
+  lazy val currentRelativeToMaxPower = current / maximumFrequencyPower
+  lazy val currentRelativeToHistory = historyNormalized()
+  lazy val longTerm: Float = smoothing()
+  lazy val longTermRelativeToMaxPower = relativePowerSmoothing()
 }
 
 case class Measurement(
@@ -49,19 +71,20 @@ case class Measurement(
   def midGamma = midGammaMeasure.current
   lazy val allFrequencyPowers: Array[Float] = Array(delta, theta, lowAlpha, highAlpha, lowBeta, highBeta, lowGamma, midGamma)
   lazy val maximumFrequencyPower: Float = allFrequencyPowers.max
-  lazy val allAbsolutePowers: Array[Int] = Array(powers.delta, powers.theta, powers.lowAlpha, powers.highAlpha, powers.lowBeta, powers.highBeta, powers.lowGamma, powers.midGamma)
+  lazy val allAbsolutePowers: Array[Int] =
+    Array(powers.delta, powers.theta, powers.lowAlpha, powers.highAlpha, powers.lowBeta, powers.highBeta, powers.lowGamma, powers.midGamma)
   lazy val maximumAbsolutePower: Int = allAbsolutePowers.max
   def progress(powers: TGEegPower = this.powers, attention: Float = this.attentionMeasure.current, meditation: Float = this.meditationMeasure.current): Measurement =
     Measurement(
       meditationMeasure.progress(meditation),
       attentionMeasure.progress(attention),
-      deltaMeasure.progress(powers.delta),
-      thetaMeasure.progress(powers.theta),
-      lowAlphaMeasure.progress(powers.lowAlpha),
-      highAlphaMeasure.progress(powers.highAlpha),
-      lowBetaMeasure.progress(powers.lowBeta),
-      highBetaMeasure.progress(powers.highBeta),
-      lowGammaMeasure.progress(powers.lowGamma),
-      midGammaMeasure.progress(powers.midGamma),
+      deltaMeasure.progress(powers.delta, powers),
+      thetaMeasure.progress(powers.theta, powers),
+      lowAlphaMeasure.progress(powers.lowAlpha, powers),
+      highAlphaMeasure.progress(powers.highAlpha, powers),
+      lowBetaMeasure.progress(powers.lowBeta, powers),
+      highBetaMeasure.progress(powers.highBeta, powers),
+      lowGammaMeasure.progress(powers.lowGamma, powers),
+      midGammaMeasure.progress(powers.midGamma, powers),
       powers)
 }
