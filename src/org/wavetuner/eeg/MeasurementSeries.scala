@@ -32,7 +32,7 @@ trait MeasurementSeries extends Handler {
 
   val measurements: EventSource[Measurement] = new EventSource[Measurement](AndroidDomain.owner) { self =>
     registerMeasurementListener { measurement =>
-      self emit measurement
+      self << measurement
     }
   }
   def registerDeviceStateChangeListener(listener: (Int => Unit)) {
