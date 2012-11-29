@@ -18,26 +18,38 @@ object Measurement {
     TimeSeries(Random.nextFloat),
     TimeSeries(Random.nextFloat),
     TimeSeries(Random.nextFloat), new TGEegPower)
+  val valueNames = List(
+    "meditation",
+    "attention",
+    "delta",
+    "theta",
+    "lowAlpha",
+    "highAlpha",
+    "lowBeta",
+    "highBeta",
+    "lowGamma",
+    "midGamma")
+  val valueExtensions = List(
+    "longTerm", "relativeToMaxPower", "relativeToHistory", "longTermRelativeToMaxPower")
 }
 
-class RichTGEegPower(val powers:TGEegPower) {
+class RichTGEegPower(val powers: TGEegPower) {
   lazy val allFrequencyPowers: Array[Float] =
     Array(powers.delta, powers.theta, powers.lowAlpha, powers.highAlpha, powers.lowBeta, powers.highBeta, powers.lowGamma, powers.midGamma)
   def maximumFrequencyPower = allFrequencyPowers.max
 }
 
 object EegHelpers {
-  implicit def toRichTGEegPower(powers:TGEegPower) = new RichTGEegPower(powers)
+  implicit def toRichTGEegPower(powers: TGEegPower) = new RichTGEegPower(powers)
 }
 import EegHelpers._
 case class TimeSeries(
-    val current: Float = 0,
-    val powers: TGEegPower = new TGEegPower,
-    val smoothing: SmoothingFunction = SmoothingFunction(0, 0.9f),
-    val historyNormalized:NormalizeByHistory = NormalizeByHistory(0.0f,0.000001f),
-    val relativePowerSmoothing: SmoothingFunction = SmoothingFunction(0,0.9f)
-  ) {
-  def progress(newValue: Float, powers:TGEegPower = this.powers): TimeSeries =
+  val current: Float = 0,
+  val powers: TGEegPower = new TGEegPower,
+  val smoothing: SmoothingFunction = SmoothingFunction(0, 0.9f),
+  val historyNormalized: NormalizeByHistory = NormalizeByHistory(0.0f, 0.000001f),
+  val relativePowerSmoothing: SmoothingFunction = SmoothingFunction(0, 0.9f)) {
+  def progress(newValue: Float, powers: TGEegPower = this.powers): TimeSeries =
     TimeSeries(newValue, powers, smoothing.progress(newValue), historyNormalized.progress(newValue), relativePowerSmoothing.progress(newValue / powers.maximumFrequencyPower))
   lazy val allFrequencyPowers: Array[Float] = powers.allFrequencyPowers
   lazy val maximumFrequencyPower: Float = powers.maximumFrequencyPower
@@ -46,7 +58,6 @@ case class TimeSeries(
   lazy val longTerm: Float = smoothing()
   lazy val longTermRelativeToMaxPower = relativePowerSmoothing()
 }
-
 case class Measurement(
   val meditationMeasure: TimeSeries = TimeSeries(),
   val attentionMeasure: TimeSeries = TimeSeries(),
