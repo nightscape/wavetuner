@@ -1,3 +1,4 @@
+P=continuations\:enable
 Xcheck-null=false
 Xcheckinit=false
 Xdisable-assertions=false
@@ -49,7 +50,11 @@ g=vars
 no-specialization=false
 nowarn=false
 optimise=false
-scala.compiler.useProjectSettings=false
+organizeimports.expandcollapse=expand
+organizeimports.groups=java$scala$org$com
+organizeimports.scalapackage=false
+organizeimports.wildcards=scalaz$scalaz.Scalaz
+scala.compiler.useProjectSettings=true
 stopBuildOnError=true
 syntaxColouring.bracket.backgroundColourEnabled=false
 syntaxColouring.bracket.bold=false

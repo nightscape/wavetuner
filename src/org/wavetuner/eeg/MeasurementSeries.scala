@@ -6,13 +6,35 @@ import com.neurosky.thinkgear.TGEegPower
 import android.os.AsyncTask
 import android.view.View
 import org.wavetuner.programs.FunctionHelpers
+import scala.react.Domain
+import android.app.Activity
+import scala.react.EventModule
+import scala.react.SchedulerModule
+
+object AndroidDomain extends Domain with SchedulerModule { self: Domain =>
+  val handler = new Handler
+  val scheduler = new ThreadSafeScheduler {
+    def schedule(r: Runnable) = handler.post(r)
+  }
+  val engine = new Engine
+  engine.runTurn
+}
 
 trait MeasurementSeries extends Handler {
+  import AndroidDomain._
+
   def currentMeasurement: Measurement
   def currentRawValue: Int
+
   var deviceStateChangeListeners = scala.collection.mutable.ArrayBuffer[(Int => Unit)]()
   var measurementListeners = scala.collection.mutable.ArrayBuffer[(Measurement => Unit)]()
   var rawDataListeners = scala.collection.mutable.ArrayBuffer[(Int => Unit)]()
+
+  val measurements: EventSource[Measurement] = new EventSource[Measurement](AndroidDomain.owner) { self =>
+    registerMeasurementListener { measurement =>
+      self << measurement
+    }
+  }
   def registerDeviceStateChangeListener(listener: (Int => Unit)) {
     deviceStateChangeListeners :+= listener
   }
