@@ -68,7 +68,8 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
     currentMeasurement = Measurement.zero
     notifyMeasurementListeners(currentMeasurement)
   }
-  override def handleMessage(msg: Message) {
+  observe(ReactiveHandler.messages)(handleTheMessage)
+  def handleTheMessage(msg: Message) {
     msg.what match {
       case MSG_STATE_CHANGE =>
         currentDeviceState = msg.arg1

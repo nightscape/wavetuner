@@ -75,7 +75,7 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
   def connectThinkgearDevice(item: MenuItem) {
     val btAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     if (btAdapter != null) {
-      val tgDevice = new TGDevice(btAdapter, measurement)
+      val tgDevice = new TGDevice(btAdapter, ReactiveHandler)
       observe(measurement.deviceStateChanges)(status => if(status == TGDevice.STATE_CONNECTED) tgDevice.start)
       tgDevice.connect(true)
     }
