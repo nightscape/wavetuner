@@ -10,18 +10,12 @@ import scala.react.Domain
 import android.app.Activity
 import scala.react.EventModule
 import scala.react.SchedulerModule
+import android.scala.reactive.AndroidDomain
+import android.scala.reactive.AndroidDomain._
+import android.scala.reactive.ReactiveHandler
 
-object AndroidDomain extends Domain with SchedulerModule { self: Domain =>
-  val handler = new Handler
-  val scheduler = new ThreadSafeScheduler {
-    def schedule(r: Runnable) = handler.post(r)
-  }
-  val engine = new Engine
-  engine.runTurn
-}
 
 trait MeasurementSeries extends Handler {
-  import AndroidDomain._
 
   def currentMeasurement: Measurement
   def currentRawValue: Int
