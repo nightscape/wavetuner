@@ -18,11 +18,14 @@ class NeuroFeedbackProgram(val evaluation: Evaluation, val measurement: Measurem
   def observeRunStateChanges(started: Events[_], stopped: Events[_]) {
     Reactor.loop { self =>
       self await started
+      self.pause
       feedback.none
       feedback.start
       self.loopUntil(stopped) {
         onMeasurementChange(self await measurement.measurements)
+        self.pause
       }
+      self.pause
       feedback.stop
     }
   }
