@@ -18,8 +18,10 @@ import org.wavetuner.programs.WaveTunerPrograms
 import org.wavetuner.feedback.audio.SoundPlayer
 import org.wavetuner.eeg.MockMeasurementSeries
 import org.wavetuner.eeg.EegMeasurementSeries
+import android.scala.reactive.AndroidDomain._
+import android.scala.reactive.ReactiveHandler
 
-class ProgramListActivity extends FragmentActivity with ProgramListFragment.Callbacks {
+class ProgramListActivity extends FragmentActivity with ProgramListFragment.Callbacks with Observing {
   import TypedResource._
   import TR._
   val measurement = WaveTunerPrograms.measurement
@@ -42,7 +44,7 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
     getMenuInflater().inflate(R.menu.activity_main, menu)
     val connectThinkgearDeviceMenuItem = menu.findItem(R.id.menu_connect_thinkgear)
-    measurement.registerDeviceStateChangeListener { newState: Int =>
+    observe(measurement.deviceStateChanges) { newState: Int =>
       import TGDevice._
       val newIcon = getResources().getDrawable(newState match {
         case STATE_IDLE => R.drawable.conn_fit1
