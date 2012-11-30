@@ -76,10 +76,7 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
     val btAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     if (btAdapter != null) {
       val tgDevice = new TGDevice(btAdapter, measurement)
-      measurement.registerDeviceStateChangeListener { newState: Int =>
-        if (newState == TGDevice.STATE_CONNECTED)
-          tgDevice.start()
-      }
+      observe(measurement.deviceStateChanges)(status => if(status == TGDevice.STATE_CONNECTED) tgDevice.start)
       tgDevice.connect(true)
     }
   }

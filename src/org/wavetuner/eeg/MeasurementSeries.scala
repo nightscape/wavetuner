@@ -14,8 +14,7 @@ import android.scala.reactive.AndroidDomain
 import android.scala.reactive.AndroidDomain._
 import android.scala.reactive.ReactiveHandler
 
-
-trait MeasurementSeries extends Handler {
+trait MeasurementSeries extends Handler with Observing {
 
   def currentMeasurement: Measurement
   def currentRawValue: Int
@@ -25,6 +24,7 @@ trait MeasurementSeries extends Handler {
   var rawDataListeners = scala.collection.mutable.ArrayBuffer[(Int => Unit)]()
 
   val measurements = EventSource[Measurement]
+
   def registerDeviceStateChangeListener(listener: (Int => Unit)) {
     deviceStateChangeListeners :+= listener
   }
