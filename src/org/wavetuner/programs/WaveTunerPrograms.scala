@@ -38,7 +38,6 @@ object WaveTunerPrograms {
   def initialize(soundPlayer: SoundPlayer) {
     programsByName = programs(soundPlayer)
   }
-  val co = new ConsoleObserver
 
   def programs(soundPlayer: SoundPlayer): Map[String, NeuroFeedbackProgram] = {
     val defaultSoundMap = scala.collection.immutable.Map(bonus -> sound_bell)
@@ -58,15 +57,6 @@ object WaveTunerPrograms {
         new SingleValueRewardEvaluation(_.thetaMeasure, "Theta"),
         new SingleValueRewardEvaluation(_.deltaMeasure, "Delta")).map(evaluation => new NeuroFeedbackProgram(evaluation, measurement, oneValueAudioFeedback))
     new LinkedHashMap[String, NeuroFeedbackProgram](ListMap.empty ++ programs.map(p => (p.toString, p)))
-  }
-}
-
-import org.wavetuner.eeg.AndroidDomain._
-class ConsoleObserver extends Observing {
-  println("********************************* OBSERVER *******************************")
-  println(WaveTunerPrograms.measurement.measurements)
-  observe(WaveTunerPrograms.measurement.measurements) {measurement =>
-    println(measurement)
   }
 }
 
