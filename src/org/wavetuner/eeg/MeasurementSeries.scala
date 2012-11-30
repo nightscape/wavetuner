@@ -16,12 +16,11 @@ import android.scala.reactive.ReactiveHandler
 
 trait MeasurementSeries extends Handler with Observing {
 
-  def currentMeasurement: Measurement
-
-  val measurements = EventSource[Measurement]
-
-  def notifyMeasurementListeners(measurement: Measurement = currentMeasurement) {
-    measurements << measurement
+  val attention = Var[Int](0)
+  val meditation = Var[Int](0)
+  val power = Var[TGEegPower](new TGEegPower)
+  val measurements: Signal[Measurement] = Signal.flow(Measurement.zero) { self =>
+    self()= self.previous.progress(power(), attention(), meditation())
   }
 
   val deviceStateChanges = EventSource[Int]
@@ -36,48 +35,24 @@ trait MeasurementSeries extends Handler with Observing {
 class EegMeasurementSeries extends Handler with MeasurementSeries {
   import TGDevice._
 
-  def log(l: String, s: String) { println(s) }
-  var currentMeasurement = Measurement.zero
-  def resetValues() {
-    currentMeasurement = Measurement.zero
-    notifyMeasurementListeners(currentMeasurement)
-  }
   observe(ReactiveHandler.messages)(handleTheMessage)
   def handleTheMessage(msg: Message) {
     msg.what match {
       case MSG_STATE_CHANGE =>
         deviceStateChanges << msg.arg1
         if (List(STATE_DISCONNECTED, STATE_NOT_FOUND, STATE_NOT_PAIRED, STATE_CONNECTING).contains(msg.arg1))
-          resetValues()
+          println("SHOULD RESET HERE")
       case MSG_ATTENTION =>
-        currentMeasurement = currentMeasurement.progress(attention = msg.arg1 / 100.0f); notifyMeasurementListeners(currentMeasurement)
+        attention()= msg.arg1
       case MSG_MEDITATION =>
-        currentMeasurement = currentMeasurement.progress(meditation = msg.arg1 / 100.0f); notifyMeasurementListeners(currentMeasurement)
+        meditation()= msg.arg1
       case MSG_EEG_POWER =>
-        val power = msg.obj.asInstanceOf[TGEegPower]
-        currentMeasurement = currentMeasurement.progress(powers = power)
-        notifyMeasurementListeners(currentMeasurement)
+        power()= msg.obj.asInstanceOf[TGEegPower]
       case MSG_RAW_DATA =>
         notifyRawDataListeners(msg.arg1)
       case _ => ;
     }
 
-  }
-
-  class MeasurementUpdatesAggregatorTask extends AsyncTask[Unit, Unit, Unit] {
-    var measurementListenersUpdated = false
-    override def doInBackground(x: Unit*) {
-      Thread.sleep(200)
-    }
-
-    /**
-     * The system calls this to perform work in the UI thread and delivers
-     * the result from doInBackground()
-     */
-    override def onPostExecute(x: Unit) {
-      measurementListenersUpdated = true
-
-    }
   }
 }
 
