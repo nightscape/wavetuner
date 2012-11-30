@@ -30,12 +30,11 @@ class EegVisualizationView(context: Context, attrs: AttributeSet) extends View(c
     for ((power, index) <- currentMeasurement.allAbsolutePowers.zipWithIndex) {
       val xPosition = index * barWidth
       val relativePower = power.toFloat / maxPower
-      println("Relative power is "+relativePower)
       val rect = new Rect(xPosition, barHeight, xPosition + barWidth, barHeight - (smoothings(index)(relativePower) * barHeight).toInt);
       canvas.drawRect(rect, paints(index));
       canvas.drawText(letters(index), xPosition + (barWidth - textSize * letters(index).length() / 2) / 2, barHeight + textSize, paints(index))
-      val yPositionOfAverage = (1 - longTermAverages(index)(power))*barHeight
-      canvas.drawRect(xPosition, yPositionOfAverage-1, xPosition + barWidth, yPositionOfAverage+1, black)
+      val yPositionOfAverage = (1 - longTermAverages(index)(power)) * barHeight
+      canvas.drawRect(xPosition, yPositionOfAverage - 1, xPosition + barWidth, yPositionOfAverage + 1, black)
     }
   }
   def paintFor(index: Int): Paint = {
