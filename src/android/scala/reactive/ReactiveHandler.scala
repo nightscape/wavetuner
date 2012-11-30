@@ -8,5 +8,6 @@ object ReactiveHandler extends Handler {
   val messages: EventSource[Message] = EventSource[Message]
   override def handleMessage(msg: Message) {
     messages << msg
+    AndroidDomain.engine.runTurn
   }
 }
