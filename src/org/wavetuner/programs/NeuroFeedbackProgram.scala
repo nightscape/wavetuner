@@ -8,20 +8,23 @@ import org.wavetuner.eeg.Measurement
 import org.wavetuner.feedback.Feedback
 import org.wavetuner.EegChannels
 import org.wavetuner.programs.evaluations.Evaluation
+import android.scala.reactive.AndroidDomain._
 
-class NeuroFeedbackProgram(val evaluation: Evaluation, val measurement: MeasurementSeries, val feedback: Feedback) extends Runnable {
+class NeuroFeedbackProgram(val evaluation: Evaluation, val measurement: MeasurementSeries, val feedback: Feedback) extends Observing {
   import R.raw._
   import EegChannels._
   import FunctionHelpers._
   import scala.math._
-  override def run {
-    feedback.none
-    measurement.registerMeasurementListener(onMeasurementChange)
-    feedback.start
-  }
-  def stop {
-    measurement.deregisterMeasurementListener(onMeasurementChange)
-    feedback.stop
+  def observeRunStateChanges(started: Events[_], stopped: Events[_]) {
+    Reactor.loop { self =>
+      self await started
+      feedback.none
+      feedback.start
+      self.loopUntil(stopped) {
+        onMeasurementChange(self await measurement.measurements)
+      }
+      feedback.stop
+    }
   }
 
   def onMeasurementChange(measurement: Measurement) {

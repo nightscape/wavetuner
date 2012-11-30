@@ -24,11 +24,7 @@ trait MeasurementSeries extends Handler {
   var measurementListeners = scala.collection.mutable.ArrayBuffer[(Measurement => Unit)]()
   var rawDataListeners = scala.collection.mutable.ArrayBuffer[(Int => Unit)]()
 
-  val measurements: EventSource[Measurement] = new EventSource[Measurement](AndroidDomain.owner) { self =>
-    registerMeasurementListener { measurement =>
-      self << measurement
-    }
-  }
+  val measurements = EventSource[Measurement]
   def registerDeviceStateChangeListener(listener: (Int => Unit)) {
     deviceStateChangeListeners :+= listener
   }
@@ -39,6 +35,7 @@ trait MeasurementSeries extends Handler {
     measurementListeners -= listener
   }
   def notifyMeasurementListeners(measurement: Measurement = currentMeasurement) {
+    measurements << measurement
     for (listener <- measurementListeners) {
       listener(measurement)
     }

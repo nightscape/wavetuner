@@ -12,13 +12,14 @@ import scala.collection.JavaConversions._
 import android.widget.ImageButton
 import org.wavetuner.programs.NeuroFeedbackProgram
 import android.view.WindowManager
+import android.scala.reactive.AndroidDomain._
 
 object ProgramDetailFragment {
 
   val ARG_ITEM_ID = "item_id"
 }
 
-class ProgramDetailFragment extends Fragment with ListenerConversions {
+class ProgramDetailFragment extends Fragment with ListenerConversions with Observing {
 
   var mItem: NeuroFeedbackProgram = _
 
@@ -37,17 +38,20 @@ class ProgramDetailFragment extends Fragment with ListenerConversions {
         .setText(mItem.toString())
     }
     val btnPlay = rootView.findViewById(R.id.btnPlay).asInstanceOf[ImageButton]
+    val started = EventSource[Boolean]
+    val stopped = EventSource[Boolean]
+    mItem.observeRunStateChanges(started, stopped)
     var isRunning = false
     btnPlay.setOnClickListener { v: View =>
       if (!isRunning) {
         btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.img_btn_pause))
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        mItem.run
+        started << true
         isRunning = true
       } else {
         btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.img_btn_play))
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        mItem.stop
+        stopped << true
         isRunning = false
       }
     }
