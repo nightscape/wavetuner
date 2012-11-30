@@ -26,7 +26,7 @@ class EegVisualizationView(context: Context, attrs: AttributeSet) extends View(c
     super.draw(canvas)
     val barWidth = canvas.getWidth() / 8
     val barHeight = canvas.getHeight() - 20 - textSize.toInt
-    val maxPower = currentMeasurement.maximumAbsolutePower
+    val maxPower = scala.math.max(currentMeasurement.maximumAbsolutePower,1.0f)
     for ((power, index) <- currentMeasurement.allAbsolutePowers.zipWithIndex) {
       val xPosition = index * barWidth
       val relativePower = power.toFloat / maxPower
