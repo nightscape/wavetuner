@@ -24,7 +24,7 @@ import android.scala.reactive.ReactiveHandler
 class ProgramListActivity extends FragmentActivity with ProgramListFragment.Callbacks with Observing {
   import TypedResource._
   import TR._
-  val measurement = WaveTunerPrograms.measurement
+  def measurement = WaveTunerPrograms.measurement
 
   private var mTwoPane: Boolean = _
 
