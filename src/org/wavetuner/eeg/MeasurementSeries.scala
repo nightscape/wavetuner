@@ -17,47 +17,25 @@ import android.scala.reactive.ReactiveHandler
 trait MeasurementSeries extends Handler with Observing {
 
   def currentMeasurement: Measurement
-  def currentRawValue: Int
-
-  var measurementListeners = scala.collection.mutable.ArrayBuffer[(Measurement => Unit)]()
-  var rawDataListeners = scala.collection.mutable.ArrayBuffer[(Int => Unit)]()
 
   val measurements = EventSource[Measurement]
 
-  def registerMeasurementListener(listener: (Measurement => Unit)) {
-    measurementListeners :+= listener
-  }
-  def deregisterMeasurementListener(listener: (Measurement => Unit)) {
-    measurementListeners -= listener
-  }
   def notifyMeasurementListeners(measurement: Measurement = currentMeasurement) {
     measurements << measurement
-    for (listener <- measurementListeners) {
-      listener(measurement)
-    }
   }
-  def registerRawDataListener(listener: (Int => Unit)) {
-    rawDataListeners :+= listener
-  }
-  def deregisterRawDataListener(listener: (Int => Unit)) {
-    rawDataListeners -= listener
-  }
+
   val deviceStateChanges = EventSource[Int]
 
   val rawData = EventSource[Int]
 
-  def notifyRawDataListeners(rawValue: Int = currentRawValue) {
+  def notifyRawDataListeners(rawValue: Int) {
     rawData << rawValue
-    for (listener <- rawDataListeners) {
-      listener(rawValue)
-    }
   }
 }
 
 class EegMeasurementSeries extends Handler with MeasurementSeries {
   import TGDevice._
-  var currentRawValue = 0
-  var currentDeviceState = STATE_DISCONNECTED
+
   def log(l: String, s: String) { println(s) }
   var currentMeasurement = Measurement.zero
   def resetValues() {
@@ -68,7 +46,6 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
   def handleTheMessage(msg: Message) {
     msg.what match {
       case MSG_STATE_CHANGE =>
-        currentDeviceState = msg.arg1
         deviceStateChanges << msg.arg1
         if (List(STATE_DISCONNECTED, STATE_NOT_FOUND, STATE_NOT_PAIRED, STATE_CONNECTING).contains(msg.arg1))
           resetValues()
@@ -81,8 +58,7 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
         currentMeasurement = currentMeasurement.progress(powers = power)
         notifyMeasurementListeners(currentMeasurement)
       case MSG_RAW_DATA =>
-        currentRawValue = msg.arg1
-        notifyRawDataListeners(currentRawValue)
+        notifyRawDataListeners(msg.arg1)
       case _ => ;
     }
 
