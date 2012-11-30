@@ -10,10 +10,15 @@ import android.graphics.Rect
 import org.wavetuner.programs.WaveTunerPrograms
 import org.wavetuner.programs.FunctionHelpers
 
-class EegVisualizationView(context: Context, attrs: AttributeSet) extends View(context, attrs) with Function1[Measurement, Unit] {
+import android.scala.reactive.AndroidDomain._
+
+class EegVisualizationView(context: Context, attrs: AttributeSet) extends View(context, attrs) with Observing {
   var height: Int = 20
   var currentMeasurement: Measurement = Measurement.random
-  WaveTunerPrograms.measurement.registerMeasurementListener(this)
+  observe(WaveTunerPrograms.measurement.measurements) { measurement =>
+    currentMeasurement = measurement
+    invalidate()
+  }
   val letters = Array("δ", "θ", "α↓", "α↑", "β↓", "β↑", "γ↓", "γ→")
   val smoothings = letters.map { a => FunctionHelpers.smoothed(0.9f) }
   val longTermAverages = letters.map { a => FunctionHelpers.smoothed(0.95f) }
@@ -43,9 +48,5 @@ class EegVisualizationView(context: Context, attrs: AttributeSet) extends View(c
     paint.setARGB(255, 180 + index * 20, 120 - index * 10, index * 10);
     paint.setTextSize(textSize)
     paint
-  }
-  def apply(measurement: Measurement) {
-    currentMeasurement = measurement
-    invalidate()
   }
 }

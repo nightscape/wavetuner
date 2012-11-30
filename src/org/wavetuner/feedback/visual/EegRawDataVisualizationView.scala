@@ -10,13 +10,14 @@ import android.graphics.Rect
 import org.wavetuner.programs.WaveTunerPrograms
 import org.wavetuner.programs.FunctionHelpers
 import android.graphics.Path
+import android.scala.reactive.AndroidDomain._
 
-class EegRawDataVisualizationView(context: Context, attrs: AttributeSet) extends View(context, attrs) with Function1[Int, Unit] {
+class EegRawDataVisualizationView(context: Context, attrs: AttributeSet) extends View(context, attrs) with Function1[Int, Unit] with Observing {
   val maxNumberOfPoints = 300
   var currentData: scala.collection.mutable.Queue[Int] = scala.collection.mutable.Queue[Int](maxNumberOfPoints)
   val exampleData = (1.until(100).map(x => (100 *Math.sin(x * 0.1f)).toInt))
   currentData.enqueue(exampleData: _*)
-  WaveTunerPrograms.measurement.registerRawDataListener(this)
+  observe(WaveTunerPrograms.measurement.rawData)(this)
   val paint = new Paint()
   paint.setARGB(255, 255, 0, 0)
   paint.setStyle(Paint.Style.STROKE)

@@ -46,7 +46,12 @@ trait MeasurementSeries extends Handler {
   def deregisterRawDataListener(listener: (Int => Unit)) {
     rawDataListeners -= listener
   }
+  val deviceStateChanges = EventSource[Int]
+
+  val rawData = EventSource[Int]
+
   def notifyRawDataListeners(rawValue: Int = currentRawValue) {
+    rawData << rawValue
     for (listener <- rawDataListeners) {
       listener(rawValue)
     }
@@ -67,6 +72,7 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
     msg.what match {
       case MSG_STATE_CHANGE =>
         currentDeviceState = msg.arg1
+        deviceStateChanges << msg.arg1
         for (listener <- deviceStateChangeListeners) {
           listener(msg.arg1)
         }
