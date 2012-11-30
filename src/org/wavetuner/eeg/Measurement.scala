@@ -60,7 +60,7 @@ case class TimeSeries(
   val historyNormalized: NormalizeByHistory = NormalizeByHistory(0.0f, 0.000001f),
   val relativePowerSmoothing: SmoothingFunction = SmoothingFunction(0, 0.9f)) {
   def progress(newValue: Float, powers: TGEegPower = this.powers): TimeSeries =
-    TimeSeries(newValue, powers, smoothing.progress(newValue), historyNormalized.progress(newValue), relativePowerSmoothing.progress(newValue / powers.maximumFrequencyPower))
+    TimeSeries(newValue, powers, smoothing.progress(newValue), historyNormalized.progress(newValue), relativePowerSmoothing.progress(newValue / scala.math.max(powers.maximumFrequencyPower,1.0f)))
   lazy val allFrequencyPowers: Array[Float] = powers.allFrequencyPowers
   lazy val maximumFrequencyPower: Float = powers.maximumFrequencyPower
   lazy val currentRelativeToMaxPower = current / maximumFrequencyPower
