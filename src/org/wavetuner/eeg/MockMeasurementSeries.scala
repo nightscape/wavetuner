@@ -8,13 +8,14 @@ class MockMeasurementSeries extends Handler with MeasurementSeries {
   sendEmptyMessageDelayed(0, 1000)
   sendEmptyMessageDelayed(1, 10)
   override def handleMessage(msg: Message) {
+    currentMeasurement = currentMeasurement.progress(Measurement.randomPower, Random.nextFloat, Random.nextFloat)
     msg.what match {
-      case 0 => notifyMeasurementListeners(); sendEmptyMessageDelayed(0, 1000)
-      case 1 => notifyRawDataListeners(); sendEmptyMessageDelayed(1, 10)
+      case 0 => notifyMeasurementListeners(currentMeasurement); sendEmptyMessageDelayed(0, 1000)
+      case 1 => notifyRawDataListeners(currentRawValue); sendEmptyMessageDelayed(1, 10)
       case _ =>
     }
   }
-  def currentMeasurement = Measurement.random
+  var currentMeasurement = Measurement.random
   def currentRawValue = Random.nextInt(10000)
 }
 

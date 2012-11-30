@@ -67,10 +67,10 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
   var currentRawValue = 0
   var currentDeviceState = STATE_DISCONNECTED
   def log(l: String, s: String) { println(s) }
-  var currentMeasurement = new Measurement()
+  var currentMeasurement = Measurement.zero
   def resetValues() {
-    currentMeasurement = new Measurement
-    notifyMeasurementListeners()
+    currentMeasurement = Measurement.zero
+    notifyMeasurementListeners(currentMeasurement)
   }
   override def handleMessage(msg: Message) {
     msg.what match {
@@ -82,13 +82,13 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
         if (List(STATE_DISCONNECTED, STATE_NOT_FOUND, STATE_NOT_PAIRED, STATE_CONNECTING).contains(msg.arg1))
           resetValues()
       case MSG_ATTENTION =>
-        currentMeasurement = currentMeasurement.progress(attention=msg.arg1/100.0f); notifyMeasurementListeners()
+        currentMeasurement = currentMeasurement.progress(attention = msg.arg1 / 100.0f); notifyMeasurementListeners(currentMeasurement)
       case MSG_MEDITATION =>
-        currentMeasurement = currentMeasurement.progress(meditation=msg.arg1/100.0f); notifyMeasurementListeners()
+        currentMeasurement = currentMeasurement.progress(meditation = msg.arg1 / 100.0f); notifyMeasurementListeners(currentMeasurement)
       case MSG_EEG_POWER =>
         val power = msg.obj.asInstanceOf[TGEegPower]
-        currentMeasurement = currentMeasurement.progress(powers=power)
-        notifyMeasurementListeners()
+        currentMeasurement = currentMeasurement.progress(powers = power)
+        notifyMeasurementListeners(currentMeasurement)
       case MSG_RAW_DATA =>
         currentRawValue = msg.arg1
         notifyRawDataListeners(currentRawValue)

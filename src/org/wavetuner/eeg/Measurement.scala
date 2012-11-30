@@ -7,17 +7,27 @@ import org.wavetuner.programs.SmoothingFunction
 import org.wavetuner.programs.NormalizeByHistory
 
 object Measurement {
-  def random: Measurement = new Measurement(
-    TimeSeries(Random.nextFloat),
-    TimeSeries(Random.nextFloat),
-    TimeSeries(Random.nextFloat),
-    TimeSeries(Random.nextFloat),
-    TimeSeries(Random.nextFloat),
-    TimeSeries(Random.nextFloat),
-    TimeSeries(Random.nextFloat),
-    TimeSeries(Random.nextFloat),
-    TimeSeries(Random.nextFloat),
-    TimeSeries(Random.nextFloat), new TGEegPower)
+  def randomPower: TGEegPower = new TGEegPower(
+    Random.nextInt(50000),
+    Random.nextInt(50000),
+    Random.nextInt(50000),
+    Random.nextInt(50000),
+    Random.nextInt(50000),
+    Random.nextInt(50000),
+    Random.nextInt(50000),
+    Random.nextInt(50000))
+  def zero: Measurement = new Measurement(
+    TimeSeries(0.0f),
+    TimeSeries(0.0f),
+    TimeSeries(0.0f),
+    TimeSeries(0.0f),
+    TimeSeries(0.0f),
+    TimeSeries(0.0f),
+    TimeSeries(0.0f),
+    TimeSeries(0.0f),
+    TimeSeries(0.0f),
+    TimeSeries(0.0f), new TGEegPower)
+  def random = zero.progress(randomPower, Random.nextFloat, Random.nextFloat)
   val valueNames = List(
     "meditation",
     "attention",
@@ -82,9 +92,8 @@ case class Measurement(
   def midGamma = midGammaMeasure.current
   lazy val allFrequencyPowers: Array[Float] = Array(delta, theta, lowAlpha, highAlpha, lowBeta, highBeta, lowGamma, midGamma)
   lazy val maximumFrequencyPower: Float = allFrequencyPowers.max
-  lazy val allAbsolutePowers: Array[Int] =
-    Array(powers.delta, powers.theta, powers.lowAlpha, powers.highAlpha, powers.lowBeta, powers.highBeta, powers.lowGamma, powers.midGamma)
-  lazy val maximumAbsolutePower: Int = allAbsolutePowers.max
+  lazy val allAbsolutePowers: Array[Float] = powers.allFrequencyPowers
+  lazy val maximumAbsolutePower: Float = powers.maximumFrequencyPower
   def progress(powers: TGEegPower = this.powers, attention: Float = this.attentionMeasure.current, meditation: Float = this.meditationMeasure.current): Measurement =
     Measurement(
       meditationMeasure.progress(meditation),
