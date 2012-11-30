@@ -19,15 +19,11 @@ trait MeasurementSeries extends Handler with Observing {
   def currentMeasurement: Measurement
   def currentRawValue: Int
 
-  var deviceStateChangeListeners = scala.collection.mutable.ArrayBuffer[(Int => Unit)]()
   var measurementListeners = scala.collection.mutable.ArrayBuffer[(Measurement => Unit)]()
   var rawDataListeners = scala.collection.mutable.ArrayBuffer[(Int => Unit)]()
 
   val measurements = EventSource[Measurement]
 
-  def registerDeviceStateChangeListener(listener: (Int => Unit)) {
-    deviceStateChangeListeners :+= listener
-  }
   def registerMeasurementListener(listener: (Measurement => Unit)) {
     measurementListeners :+= listener
   }
@@ -74,9 +70,6 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
       case MSG_STATE_CHANGE =>
         currentDeviceState = msg.arg1
         deviceStateChanges << msg.arg1
-        for (listener <- deviceStateChangeListeners) {
-          listener(msg.arg1)
-        }
         if (List(STATE_DISCONNECTED, STATE_NOT_FOUND, STATE_NOT_PAIRED, STATE_CONNECTING).contains(msg.arg1))
           resetValues()
       case MSG_ATTENTION =>
