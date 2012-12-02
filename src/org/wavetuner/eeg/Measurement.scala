@@ -5,6 +5,9 @@ import com.neurosky.thinkgear.TGEegPower
 import org.wavetuner.programs.FunctionHelpers._
 import org.wavetuner.programs.SmoothingFunction
 import org.wavetuner.programs.NormalizeByHistory
+import EegHelpers._
+import scala.collection.mutable.LinkedHashMap
+import scala.collection.immutable.ListMap
 
 object Measurement {
   def randomPower: TGEegPower = new TGEegPower(
@@ -28,17 +31,20 @@ object Measurement {
     TimeSeries(0.0f),
     TimeSeries(0.0f), new TGEegPower)
   def random = zero.progress(randomPower, Random.nextFloat, Random.nextFloat)
-  val valueNames = List(
-    "meditation",
-    "attention",
-    "delta",
-    "theta",
-    "lowAlpha",
-    "highAlpha",
-    "lowBeta",
-    "highBeta",
-    "lowGamma",
-    "midGamma")
+  val valueExtractors: Map[String, Measurement => Float] = ListMap(
+    "meditation" -> {m: Measurement => m.meditation},
+    "attention" -> {m: Measurement => m.attention},
+    "delta" -> {m: Measurement => m.delta},
+    "theta" -> {m: Measurement => m.theta},
+    "lowAlpha" -> {m: Measurement => m.lowAlpha},
+    "highAlpha" -> {m: Measurement => m.highAlpha},
+    "lowBeta" -> {m: Measurement => m.lowBeta},
+    "highBeta" -> {m: Measurement => m.highBeta},
+    "lowGamma" -> {m: Measurement => m.lowGamma},
+    "midGamma" -> {m: Measurement => m.midGamma}
+  )
+
+  val valueNames = valueExtractors.keys
   val valueExtensions = List(
     "longTerm", "relativeToMaxPower", "relativeToHistory", "longTermRelativeToMaxPower")
 }
@@ -52,7 +58,6 @@ class RichTGEegPower(val powers: TGEegPower) {
 object EegHelpers {
   implicit def toRichTGEegPower(powers: TGEegPower) = new RichTGEegPower(powers)
 }
-import EegHelpers._
 case class TimeSeries(
   val current: Float = 0,
   val powers: TGEegPower = new TGEegPower,
@@ -107,4 +112,5 @@ case class Measurement(
       lowGammaMeasure.progress(powers.lowGamma, powers),
       midGammaMeasure.progress(powers.midGamma, powers),
       powers)
+  def toList: List[Float] = Measurement.valueExtractors.values.map(e => e(this)).toList
 }

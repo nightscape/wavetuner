@@ -55,30 +55,21 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
       })
       connectThinkgearDeviceMenuItem.setIcon(newIcon)
     }
-    connectThinkgearDevice(connectThinkgearDeviceMenuItem)
+    startMeasuring
     true
   }
   override def onOptionsItemSelected(item: android.view.MenuItem): Boolean = {
     item.getItemId() match {
-      case R.id.menu_connect_thinkgear => connectThinkgearDevice(item); true
+      case R.id.menu_connect_thinkgear => startMeasuring; true
       case R.id.menu_use_mock_device =>
-        WaveTunerPrograms.measurement = if (item.isChecked()) {
-          new MockMeasurementSeries
-        } else {
-          new EegMeasurementSeries
-        }
+        WaveTunerPrograms.useMock(item.isChecked())
         item.setChecked(!item.isChecked())
         true
       case _ => super.onOptionsItemSelected(item)
     }
   }
-  def connectThinkgearDevice(item: MenuItem) {
-    val btAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-    if (btAdapter != null) {
-      val tgDevice = new TGDevice(btAdapter, ReactiveHandler)
-      observe(measurement.deviceStateChanges)(status => if(status == TGDevice.STATE_CONNECTED) tgDevice.start)
-      tgDevice.connect(true)
-    }
+  def startMeasuring {
+	WaveTunerPrograms.measurement.startMeasuring
   }
   implicit def function2ViewOnItemClickListener[T <: android.widget.Adapter](f: (AdapterView[_], View, Int, Long) => Unit): AdapterView.OnItemClickListener = {
 

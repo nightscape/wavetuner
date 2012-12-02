@@ -13,6 +13,7 @@ import scala.react.SchedulerModule
 import android.scala.reactive.AndroidDomain
 import android.scala.reactive.AndroidDomain._
 import android.scala.reactive.ReactiveHandler
+import android.bluetooth.BluetoothAdapter
 
 trait MeasurementSeries extends Handler with Observing {
 
@@ -20,16 +21,14 @@ trait MeasurementSeries extends Handler with Observing {
   val meditation = Var[Int](0)
   val power = Var[TGEegPower](new TGEegPower)
   val measurements: Signal[Measurement] = Signal.flow(Measurement.zero) { self =>
-    self()= self.previous.progress(power(), attention(), meditation())
+    self() = self.previous.progress(power(), attention(), meditation())
   }
 
   val deviceStateChanges = EventSource[Int]
 
-  val rawData = EventSource[Int]
+  val rawData = Var[Int](0)
 
-  def notifyRawDataListeners(rawValue: Int) {
-    rawData << rawValue
-  }
+  def startMeasuring: Unit
 }
 
 class EegMeasurementSeries extends Handler with MeasurementSeries {
@@ -43,16 +42,24 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
         if (List(STATE_DISCONNECTED, STATE_NOT_FOUND, STATE_NOT_PAIRED, STATE_CONNECTING).contains(msg.arg1))
           println("SHOULD RESET HERE")
       case MSG_ATTENTION =>
-        attention()= msg.arg1
+        attention() = msg.arg1
       case MSG_MEDITATION =>
-        meditation()= msg.arg1
+        meditation() = msg.arg1
       case MSG_EEG_POWER =>
-        power()= msg.obj.asInstanceOf[TGEegPower]
+        power() = msg.obj.asInstanceOf[TGEegPower]
       case MSG_RAW_DATA =>
-        notifyRawDataListeners(msg.arg1)
+        rawData() = msg.arg1
       case _ => ;
     }
 
+  }
+  def startMeasuring {
+    val btAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    if (btAdapter != null) {
+      val tgDevice = new TGDevice(btAdapter, ReactiveHandler)
+      observe(this.deviceStateChanges)(status => if (status == TGDevice.STATE_CONNECTED) tgDevice.start)
+      tgDevice.connect(true)
+    }
   }
 }
 

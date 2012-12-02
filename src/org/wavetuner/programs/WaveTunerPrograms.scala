@@ -2,7 +2,7 @@ package org.wavetuner.programs
 
 import java.util.ArrayList
 import java.util.LinkedHashMap
-import java.util.{List => JList}
+import java.util.{ List => JList }
 import java.util.Map
 import scala.collection.JavaConversions.mapAsJavaMap
 import scala.collection.immutable.ListMap
@@ -26,6 +26,8 @@ import org.wavetuner.programs.evaluations.AttentionMeditationEvaluation
 import org.wavetuner.programs.evaluations.SimpleAlphaThetaProgram
 import org.wavetuner.programs.evaluations.SingleValueRewardEvaluation
 import org.wavetuner.EegChannels
+import org.wavetuner.eeg.SessionRecorder
+import org.wavetuner.eeg.MockMeasurementSeries
 
 object WaveTunerPrograms {
   import R._
@@ -33,9 +35,27 @@ object WaveTunerPrograms {
   import EegChannels._
   var programsByName: Map[String, NeuroFeedbackProgram] = _
   def programs: JList[NeuroFeedbackProgram] = new ArrayList(programsByName.values)
-  def programNames: JList[String]  = new ArrayList(programsByName.keySet())
-  var measurement: MeasurementSeries = new EegMeasurementSeries
+  def programNames: JList[String] = new ArrayList(programsByName.keySet())
+  var _measurement: MeasurementSeries = _
+  this.measurement = new EegMeasurementSeries
+  var soundPlayer: SoundPlayer = _
+  def useMock(useMock: Boolean) {
+    this.measurement = if (useMock) {
+      new MockMeasurementSeries
+    } else {
+      new EegMeasurementSeries
+    }
+  }
+  def measurement = _measurement
+  def measurement_=(measurement: MeasurementSeries) = {
+    _measurement = measurement
+    SessionRecorder.forRawData(measurement)
+  }
   def initialize(soundPlayer: SoundPlayer) {
+    this.soundPlayer = soundPlayer
+    reinit
+  }
+  def reinit {
     programsByName = programs(soundPlayer)
   }
 

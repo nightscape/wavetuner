@@ -10,9 +10,13 @@ class SingleValueRewardEvaluation(val valueFunction: (Measurement => TimeSeries)
 
   def apply(measurement: Measurement): List[Reward] = {
     val series = valueFunction(measurement)
-    List(Reward(standard, series.longTermRelativeToMaxPower)) ++
-      (if (series.current > series.longTerm)
-        List(Reward(bonus, series.currentRelativeToHistory, onlyOnce = true))
+    val current = series.current
+    val longTermNormalized = series.longTermRelativeToMaxPower
+    val longTerm = series.longTerm
+    val currentRelativeToHistory = series.currentRelativeToHistory
+    List(Reward(standard, longTermNormalized)) ++
+      (if (current > longTerm)
+        List(Reward(bonus, currentRelativeToHistory, onlyOnce = true))
       else
         Nil)
   }
