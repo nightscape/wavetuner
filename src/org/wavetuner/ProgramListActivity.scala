@@ -25,6 +25,7 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
   import TypedResource._
   import TR._
   def measurement = WaveTunerPrograms.measurement
+  var currentDeviceStateObserver: Option[Observer] = None
 
   private var mTwoPane: Boolean = _
 
@@ -40,10 +41,15 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
         .setActivateOnItemClick(true)
     }
   }
+//  override def onStart = super.onStart; startMeasuring
 
-  override def onCreateOptionsMenu(menu: Menu): Boolean = {
+  override def onPrepareOptionsMenu(menu: Menu): Boolean = {
     getMenuInflater().inflate(R.menu.activity_main, menu)
-    val connectThinkgearDeviceMenuItem = menu.findItem(R.id.menu_connect_thinkgear)
+    currentDeviceStateObserver.foreach(_.dispose)
+    currentDeviceStateObserver = Some(installConnectionItemObserver(menu.findItem(R.id.menu_connect_thinkgear)))
+    true
+  }
+  def installConnectionItemObserver(connectThinkgearDeviceMenuItem: MenuItem): Observer = {
     observe(measurement.deviceStateChanges) { newState: Int =>
       import TGDevice._
       val newIcon = getResources().getDrawable(newState match {
@@ -55,21 +61,23 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
       })
       connectThinkgearDeviceMenuItem.setIcon(newIcon)
     }
-    startMeasuring
-    true
   }
   override def onOptionsItemSelected(item: android.view.MenuItem): Boolean = {
     item.getItemId() match {
-      case R.id.menu_connect_thinkgear => startMeasuring; true
+      case R.id.menu_connect_thinkgear =>
+        startMeasuring; true
       case R.id.menu_use_mock_device =>
-        WaveTunerPrograms.useMock(item.isChecked())
-        item.setChecked(!item.isChecked())
+        val shouldUseMock = !item.isChecked()
+        item.setChecked(shouldUseMock)
+        WaveTunerPrograms.useMock(shouldUseMock)
+        startMeasuring
         true
       case _ => super.onOptionsItemSelected(item)
     }
   }
   def startMeasuring {
-	WaveTunerPrograms.measurement.startMeasuring
+    invalidateOptionsMenu()
+    WaveTunerPrograms.measurement.startMeasuring
   }
   implicit def function2ViewOnItemClickListener[T <: android.widget.Adapter](f: (AdapterView[_], View, Int, Long) => Unit): AdapterView.OnItemClickListener = {
 

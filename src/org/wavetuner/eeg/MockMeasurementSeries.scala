@@ -1,12 +1,13 @@
 package org.wavetuner.eeg;
 import com.neurosky.thinkgear.TGDevice
+import com.neurosky.thinkgear.TGDevice._
 import android.os.Handler
 import android.os.Message
 import scala.util.Random
+import android.scala.reactive.AndroidDomain
 
 class MockMeasurementSeries extends Handler with MeasurementSeries {
-  sendEmptyMessageDelayed(0, 1000)
-  sendEmptyMessageDelayed(1, 10)
+
   override def handleMessage(msg: Message) {
     msg.what match {
       case 0 =>
@@ -19,6 +20,13 @@ class MockMeasurementSeries extends Handler with MeasurementSeries {
         sendEmptyMessageDelayed(1, 10)
       case _ =>
     }
+    AndroidDomain.engine.runTurn
+  }
+  def startMeasuring {
+    sendEmptyMessageDelayed(0, 1000)
+    sendEmptyMessageDelayed(1, 10)
+    this.deviceStateChanges << STATE_CONNECTED
+    AndroidDomain.engine.runTurn
   }
 }
 
