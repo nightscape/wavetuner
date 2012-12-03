@@ -13,6 +13,8 @@ import android.widget.ImageButton
 import org.wavetuner.programs.NeuroFeedbackProgram
 import android.view.WindowManager
 import android.scala.reactive.AndroidDomain._
+import org.wavetuner.eeg.SessionRecorder
+import android.scala.reactive.AndroidDomain
 
 object ProgramDetailFragment {
 
@@ -22,12 +24,19 @@ object ProgramDetailFragment {
 class ProgramDetailFragment extends Fragment with ListenerConversions with Observing {
 
   var mItem: NeuroFeedbackProgram = _
+  val started = EventSource[Boolean]
+  val stopped = EventSource[Boolean]
 
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
     if (getArguments.containsKey(ARG_ITEM_ID)) {
       mItem = WaveTunerPrograms.programsByName.get(getArguments.getString(ARG_ITEM_ID))
     }
+  }
+
+  override def onStop {
+    super.onStop
+    stopped << true
   }
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
@@ -38,8 +47,8 @@ class ProgramDetailFragment extends Fragment with ListenerConversions with Obser
         .setText(mItem.toString())
     }
     val btnPlay = rootView.findViewById(R.id.btnPlay).asInstanceOf[ImageButton]
-    val started = EventSource[Boolean]
-    val stopped = EventSource[Boolean]
+
+    SessionRecorder.forRawData(WaveTunerPrograms.measurement).listen(started, stopped)
     mItem.observeRunStateChanges(started, stopped)
     var isRunning = false
     btnPlay.setOnClickListener { v: View =>
@@ -54,6 +63,7 @@ class ProgramDetailFragment extends Fragment with ListenerConversions with Obser
         stopped << true
         isRunning = false
       }
+      AndroidDomain.engine.runTurn
     }
     rootView
   }

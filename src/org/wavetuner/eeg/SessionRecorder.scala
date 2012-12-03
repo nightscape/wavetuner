@@ -4,6 +4,10 @@ import android.scala.reactive.AndroidDomain._
 import android.os.Environment
 import java.io.File
 import java.io._
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import android.util.Log
 
 trait Formatter[T] {
   def headers: String
@@ -24,24 +28,27 @@ object SessionRecorder {
 }
 
 class SessionRecorder[T](observable: Signal[T], sessionName: String = "")(implicit val formatter: Formatter[T]) extends Observing {
-  def printToFile(f: java.io.File)(op: java.io.PrintWriter => Unit) {
-    val p = new java.io.PrintWriter(f)
-    try { op(p) } finally { p.close() }
-  }
+  val dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss")
   def listen(start: Events[_], stop: Events[_]) {
     Reactor.loop { self =>
       self await start
-      self.pause
+      val logFile = new File(path, sessionName + "_" + dateFormatter.format(new Date()) + ".txt")
       val p = new java.io.PrintWriter(logFile)
+      Log.i("WaveTuner Session Recorder", "Recording " + sessionName + " data to file " + logFile)
+      p.println(formatter.headers)
+      self.pause
       self.loopUntil(stop) {
-        p.println(formatter.format(self awaitNext observable))
+        p.println(formatter.format(self await observable))
+        Log.i("WaveTuner Session Recorder", "Recorded value")
+        self.pause
       }
       p.close
+      Log.i("WaveTuner Session Recorder", "Closed recorded session file " + logFile)
       self.pause
     }
   }
-
+  val path = new File(Environment.getExternalStorageDirectory(), "wavetuner")
+  path.mkdirs()
   val externalStorageWriteable = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-  val logFile = new File(Environment.getExternalStorageDirectory(), sessionName + ".txt")
 
 }

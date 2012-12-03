@@ -49,7 +49,6 @@ object WaveTunerPrograms {
   def measurement = _measurement
   def measurement_=(measurement: MeasurementSeries) = {
     _measurement = measurement
-    SessionRecorder.forRawData(measurement)
   }
   def initialize(soundPlayer: SoundPlayer) {
     this.soundPlayer = soundPlayer

@@ -31,7 +31,8 @@ class SoundPlayer(context: Context) {
   }
   def stop {
     mediaPlayers.values.foreach { player =>
-      player.pause
+      if (player.isPlaying())
+        player.pause
     }
     
   }
