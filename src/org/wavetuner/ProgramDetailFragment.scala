@@ -20,13 +20,13 @@ object ProgramDetailFragment {
 
   val ARG_ITEM_ID = "item_id"
 }
-
-class ProgramDetailFragment extends Fragment with ListenerConversions with Observing {
-
-  var mItem: NeuroFeedbackProgram = _
+trait StartAndStopObservable {
   val started = EventSource[Boolean]
   val stopped = EventSource[Boolean]
+}
+class ProgramDetailFragment extends Fragment with ListenerConversions with Observing with StartAndStopObservable {
 
+  var mItem: NeuroFeedbackProgram = _
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
     if (getArguments.containsKey(ARG_ITEM_ID)) {
@@ -43,13 +43,11 @@ class ProgramDetailFragment extends Fragment with ListenerConversions with Obser
     val rootView = inflater.inflate(R.layout.fragment_program_detail, container, false)
     val textView = rootView.findViewById(R.id.program_detail).asInstanceOf[TextView]
     if (mItem != null) {
-      textView
-        .setText(mItem.toString())
+      textView.setText(mItem.toString())
     }
     val btnPlay = rootView.findViewById(R.id.btnPlay).asInstanceOf[ImageButton]
 
-    SessionRecorder.forRawData(WaveTunerPrograms.measurement).listen(started, stopped)
-    mItem.observeRunStateChanges(started, stopped)
+    val reactor = mItem.observeRunStateChanges(started, stopped)
     var isRunning = false
     btnPlay.setOnClickListener { v: View =>
       if (!isRunning) {
@@ -63,7 +61,7 @@ class ProgramDetailFragment extends Fragment with ListenerConversions with Obser
         stopped << true
         isRunning = false
       }
-      AndroidDomain.engine.runTurn
+      reactor.engine.runTurn
     }
     rootView
   }

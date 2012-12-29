@@ -20,8 +20,6 @@ class EegVisualizationView(context: Context, attrs: AttributeSet) extends View(c
     invalidate()
   }
   val letters = Array("δ", "θ", "α↓", "α↑", "β↓", "β↑", "γ↓", "γ→")
-  val smoothings = letters.map { a => FunctionHelpers.smoothed(0.9f) }
-  val longTermAverages = letters.map { a => FunctionHelpers.smoothed(0.95f) }
   val textSize = 30.0f
   val paints = letters.indices.map(paintFor(_))
   val black = new Paint()
@@ -31,14 +29,17 @@ class EegVisualizationView(context: Context, attrs: AttributeSet) extends View(c
     super.draw(canvas)
     val barWidth = canvas.getWidth() / 8
     val barHeight = canvas.getHeight() - 20 - textSize.toInt
-    val maxPower = scala.math.max(currentMeasurement.maximumAbsolutePower,1.0f)
-    for ((power, index) <- currentMeasurement.allAbsolutePowers.zipWithIndex) {
+    for ((power, index) <- currentMeasurement.allFrequencySeries.zipWithIndex) {
       val xPosition = index * barWidth
-      val relativePower = power.toFloat / maxPower
-      val rect = new Rect(xPosition, barHeight, xPosition + barWidth, barHeight - (smoothings(index)(relativePower) * barHeight).toInt);
+
+      val rect = {
+        val relative = power.currentRelativeToMaxPower
+        val upper = barHeight - (relative* barHeight).toInt
+        new Rect(xPosition, upper, xPosition + barWidth, barHeight);
+      }
       canvas.drawRect(rect, paints(index));
       canvas.drawText(letters(index), xPosition + (barWidth - textSize * letters(index).length() / 2) / 2, barHeight + textSize, paints(index))
-      val yPositionOfAverage = (1 - longTermAverages(index)(power)) * barHeight
+      val yPositionOfAverage = (1 - power.longTermRelativeToMaxPower) * barHeight
       canvas.drawRect(xPosition, yPositionOfAverage - 1, xPosition + barWidth, yPositionOfAverage + 1, black)
     }
   }

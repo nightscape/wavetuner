@@ -9,31 +9,42 @@ import org.wavetuner.feedback.Feedback
 import org.wavetuner.EegChannels
 import org.wavetuner.programs.evaluations.Evaluation
 import android.scala.reactive.AndroidDomain._
+import org.wavetuner.feedback.Reward
 
 class NeuroFeedbackProgram(val evaluation: Evaluation, val measurement: MeasurementSeries, val feedback: Feedback) extends Observing {
   import R.raw._
   import EegChannels._
   import FunctionHelpers._
   import scala.math._
-  def observeRunStateChanges(started: Events[_], stopped: Events[_]) {
+
+  def observeRunStateChanges(started: Events[Boolean], stopped: Events[Boolean]): Reactor = {
     Reactor.loop { self =>
       self await started
       self.pause
-      feedback.none
-      feedback.start
+      start
       self.loopUntil(stopped) {
-        onMeasurementChange(self await measurement.measurements)
-        self.pause
+        val currentRewards = self awaitNext rewards
+        for (reward <- currentRewards) {
+          feedback.reward(reward)
+        }
       }
+      stop
       self.pause
-      feedback.stop
     }
   }
+  val rewards = Strict[List[Reward]] {
+    val currentMeasurement = measurement.measurements()
+    evaluation(currentMeasurement)
+  }
+  def start {
+    feedback.none
+    feedback.start
 
-  def onMeasurementChange(measurement: Measurement) {
-    for (reward <- evaluation(measurement)) {
-      feedback.reward(reward)
-    }
+  }
+
+  def stop {
+    feedback.stop
+
   }
 
   override def toString = evaluation.toString

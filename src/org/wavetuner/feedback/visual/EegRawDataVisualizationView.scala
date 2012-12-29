@@ -13,9 +13,11 @@ import android.graphics.Path
 import android.scala.reactive.AndroidDomain._
 
 class EegRawDataVisualizationView(context: Context, attrs: AttributeSet) extends View(context, attrs) with Function1[Int, Unit] with Observing {
-  val maxNumberOfPoints = 300
+  val maxNumberOfPoints = 500
   var currentData: scala.collection.mutable.Queue[Int] = scala.collection.mutable.Queue[Int](maxNumberOfPoints)
-  val exampleData = (1.until(100).map(x => (100 *Math.sin(x * 0.1f)).toInt))
+  var max: Int = 1
+  var min: Int = -1
+  val exampleData = (1.until(100).map(x => (Math.sin(x * 0.1f)).toInt))
   currentData.enqueue(exampleData: _*)
   observe(WaveTunerPrograms.measurement.rawData)(this)
   val paint = new Paint()
@@ -24,18 +26,20 @@ class EegRawDataVisualizationView(context: Context, attrs: AttributeSet) extends
 
   override def draw(canvas: Canvas) {
     super.draw(canvas)
-    val min = currentData.min
-    val max = currentData.max
     val scaleY = 80.0f / (max - min)
     val scaleX = canvas.getWidth().toFloat / maxNumberOfPoints
     val scaledData = currentData.map(y => (y - min) * scaleY)
     val path = new Path()
     path.moveTo(0, scaledData(0))
     val zipped = scaledData.slice(1, currentData.size - 1).zipWithIndex
-    zipped.foreach { pair => path.lineTo(pair._2 * scaleX, pair._1) }
+    zipped.foreach { case (y, x) => path.lineTo(x * scaleX, y) }
     canvas.drawPath(path, paint)
   }
   def apply(rawData: Int) {
+    if (rawData < min)
+      min = rawData
+    else if (rawData > max)
+      max = rawData
     currentData.enqueue(rawData)
     if (currentData.size > maxNumberOfPoints)
       currentData.dequeue

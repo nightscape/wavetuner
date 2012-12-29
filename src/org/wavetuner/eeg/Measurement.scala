@@ -32,17 +32,16 @@ object Measurement {
     TimeSeries(0.0f), new TGEegPower)
   def random = zero.progress(randomPower, Random.nextFloat, Random.nextFloat)
   val valueExtractors: Map[String, Measurement => Float] = ListMap(
-    "meditation" -> {m: Measurement => m.meditation},
-    "attention" -> {m: Measurement => m.attention},
-    "delta" -> {m: Measurement => m.delta},
-    "theta" -> {m: Measurement => m.theta},
-    "lowAlpha" -> {m: Measurement => m.lowAlpha},
-    "highAlpha" -> {m: Measurement => m.highAlpha},
-    "lowBeta" -> {m: Measurement => m.lowBeta},
-    "highBeta" -> {m: Measurement => m.highBeta},
-    "lowGamma" -> {m: Measurement => m.lowGamma},
-    "midGamma" -> {m: Measurement => m.midGamma}
-  )
+    "meditation" -> { m: Measurement => m.meditation },
+    "attention" -> { m: Measurement => m.attention },
+    "delta" -> { m: Measurement => m.delta },
+    "theta" -> { m: Measurement => m.theta },
+    "lowAlpha" -> { m: Measurement => m.lowAlpha },
+    "highAlpha" -> { m: Measurement => m.highAlpha },
+    "lowBeta" -> { m: Measurement => m.lowBeta },
+    "highBeta" -> { m: Measurement => m.highBeta },
+    "lowGamma" -> { m: Measurement => m.lowGamma },
+    "midGamma" -> { m: Measurement => m.midGamma })
 
   val valueNames = valueExtractors.keys
   val valueExtensions = List(
@@ -65,7 +64,7 @@ case class TimeSeries(
   val historyNormalized: NormalizeByHistory = NormalizeByHistory(0.0f, 0.000001f),
   val relativePowerSmoothing: SmoothingFunction = SmoothingFunction(0, 0.9f)) {
   def progress(newValue: Float, powers: TGEegPower = this.powers): TimeSeries =
-    TimeSeries(newValue, powers, smoothing.progress(newValue), historyNormalized.progress(newValue), relativePowerSmoothing.progress(newValue / scala.math.max(powers.maximumFrequencyPower,1.0f)))
+    TimeSeries(newValue, powers, smoothing.progress(newValue), historyNormalized.progress(newValue), relativePowerSmoothing.progress(newValue / scala.math.max(powers.maximumFrequencyPower, 1.0f)))
   lazy val allFrequencyPowers: Array[Float] = powers.allFrequencyPowers
   lazy val maximumFrequencyPower: Float = powers.maximumFrequencyPower
   lazy val currentRelativeToMaxPower = current / maximumFrequencyPower
@@ -95,6 +94,8 @@ case class Measurement(
   def highBeta = highBetaMeasure.current
   def lowGamma = lowGammaMeasure.current
   def midGamma = midGammaMeasure.current
+  lazy val allFrequencySeries: Array[TimeSeries] = Array(deltaMeasure, thetaMeasure, lowAlphaMeasure, highAlphaMeasure,
+    lowBetaMeasure, highBetaMeasure, lowGammaMeasure, midGammaMeasure)
   lazy val allFrequencyPowers: Array[Float] = Array(delta, theta, lowAlpha, highAlpha, lowBeta, highBeta, lowGamma, midGamma)
   lazy val maximumFrequencyPower: Float = allFrequencyPowers.max
   lazy val allAbsolutePowers: Array[Float] = powers.allFrequencyPowers

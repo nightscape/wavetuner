@@ -45,6 +45,7 @@ object WaveTunerPrograms {
     } else {
       new EegMeasurementSeries
     }
+    reinit
   }
   def measurement = _measurement
   def measurement_=(measurement: MeasurementSeries) = {
