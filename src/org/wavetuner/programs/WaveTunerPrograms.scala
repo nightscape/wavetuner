@@ -28,6 +28,7 @@ import org.wavetuner.programs.evaluations.SingleValueRewardEvaluation
 import org.wavetuner.EegChannels
 import org.wavetuner.eeg.SessionRecorder
 import org.wavetuner.eeg.MockMeasurementSeries
+import org.wavetuner.programs.evaluations.InsightProgram
 
 object WaveTunerPrograms {
   import R._
@@ -66,6 +67,7 @@ object WaveTunerPrograms {
     val programs = List(
       new NeuroFeedbackProgram(new AttentionMeditationEvaluation, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (meditationChannel -> sound_ocean, attentionChannel -> sound_unity), attentionChannel, meditationChannel)),
       new NeuroFeedbackProgram(new SimpleAlphaThetaProgram, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (lowAlphaChannel -> sound_ocean, thetaChannel -> sound_unity, lowBetaChannel -> sound_brooks), lowAlphaChannel, thetaChannel, lowBetaChannel))) ++ List(
+      new NeuroFeedbackProgram(new InsightProgram, measurement, new AudioFeedback(soundPlayer, defaultSoundMap + (standard -> sound_unity, noise -> sound_whitenoise), standard))) ++ List(
         new SingleValueRewardEvaluation(_.meditationMeasure, "Meditation"),
         new SingleValueRewardEvaluation(_.attentionMeasure, "Attention"),
         new SingleValueRewardEvaluation(_.midGammaMeasure, "Mid Gamma"),

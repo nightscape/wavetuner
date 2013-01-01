@@ -13,4 +13,5 @@ object EegChannels {
   val thetaChannel = 9
   val deltaChannel = 10
   val bonus = 11
+  val noise = 12
 }

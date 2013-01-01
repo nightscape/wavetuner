@@ -8,6 +8,7 @@ import org.wavetuner.programs.NormalizeByHistory
 import EegHelpers._
 import scala.collection.mutable.LinkedHashMap
 import scala.collection.immutable.ListMap
+import org.wavetuner.programs.Maximum
 
 object Measurement {
   def randomPower: TGEegPower = new TGEegPower(
@@ -61,15 +62,16 @@ case class TimeSeries(
   val current: Float = 0,
   val powers: TGEegPower = new TGEegPower,
   val smoothing: SmoothingFunction = SmoothingFunction(0, 0.9f),
-  val historyNormalized: NormalizeByHistory = NormalizeByHistory(0.0f, 0.000001f),
+  val historicMaximum: Maximum = new Maximum(0.000001f),
   val relativePowerSmoothing: SmoothingFunction = SmoothingFunction(0, 0.9f)) {
   def progress(newValue: Float, powers: TGEegPower = this.powers): TimeSeries =
-    TimeSeries(newValue, powers, smoothing.progress(newValue), historyNormalized.progress(newValue), relativePowerSmoothing.progress(newValue / scala.math.max(powers.maximumFrequencyPower, 1.0f)))
+    TimeSeries(newValue, powers, smoothing.progress(newValue), historicMaximum.progress(newValue), relativePowerSmoothing.progress(newValue / scala.math.max(powers.maximumFrequencyPower, 1.0f)))
   lazy val allFrequencyPowers: Array[Float] = powers.allFrequencyPowers
   lazy val maximumFrequencyPower: Float = powers.maximumFrequencyPower
   lazy val currentRelativeToMaxPower = current / maximumFrequencyPower
-  lazy val currentRelativeToHistory = historyNormalized()
+  lazy val currentRelativeToHistory = current / historicMaximum()
   lazy val longTerm: Float = smoothing()
+  lazy val longTermRelativeToHistory = smoothing() / historicMaximum()
   lazy val longTermRelativeToMaxPower = relativePowerSmoothing()
 }
 case class Measurement(

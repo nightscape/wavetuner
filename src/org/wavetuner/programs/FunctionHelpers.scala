@@ -13,6 +13,10 @@ case class NormalizeByHistory(val currentValue: Float, val historicalMaximum: Fl
   def apply = currentValue / historicalMaximum
   def progress(newValue: Float) = NormalizeByHistory(newValue, scala.math.max(historicalMaximum, newValue))
 }
+case class Maximum(val currentMaximum: Float) {
+  def apply() = currentMaximum
+  def progress(newValue: Float) = Maximum(scala.math.max(newValue, currentMaximum))
+}
 object FunctionHelpers {
   def smoothed(smoothingFactor: Float) = new Function1[Float, Float] {
     var currentValue: Float = 0

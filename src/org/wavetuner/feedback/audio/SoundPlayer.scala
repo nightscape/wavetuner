@@ -10,23 +10,24 @@ import scala.collection.mutable.Map
 
 class SoundPlayer(context: Context) {
   val mediaPlayers = Map[Int, MediaPlayer]()
-  def addSounds(soundIds:Int*) {
+  def addSounds(soundIds: Int*) {
     soundIds.foreach { soundId => mediaPlayers.put(soundId, MediaPlayer.create(context, soundId)) }
   }
-  def setVolume(soundId:Int, volume:Float) {
-    mediaPlayers.get(soundId).foreach(_.setVolume(volume, volume))
+  def setVolume(soundId: Int, volume: Float) {
+    val scaledVolume = (1 - (Math.log(100.0 - volume * 100) / Math.log(100.0))).toFloat
+    mediaPlayers.get(soundId).foreach(_.setVolume(scaledVolume, scaledVolume))
   }
-  def setVolume(volume:Float) {
-    mediaPlayers.values.foreach(_.setVolume(volume, volume))    
+  def setVolume(volume: Float) {
+    mediaPlayers.values.foreach(_.setVolume(volume, volume))
   }
-  def playInLoop(soundIds:Int*) {
+  def playInLoop(soundIds: Int*) {
     val players = soundIds.flatMap(mediaPlayers.get(_))
     for (mediaPlayer <- players) {
       mediaPlayer.setLooping(true)
       mediaPlayer.start()
     }
   }
-  def playOnce(soundId:Int) {
+  def playOnce(soundId: Int) {
     mediaPlayers.get(soundId).foreach(_.start())
   }
   def stop {
@@ -34,6 +35,6 @@ class SoundPlayer(context: Context) {
       if (player.isPlaying())
         player.pause
     }
-    
+
   }
 }
