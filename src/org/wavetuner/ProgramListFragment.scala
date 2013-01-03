@@ -1,6 +1,5 @@
 package org.wavetuner
 
-import android.R
 import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.ListFragment
@@ -14,6 +13,8 @@ import android.widget.AbsListView
 import org.wavetuner.programs.WaveTunerPrograms
 import java.util.ArrayList
 import org.wavetuner.programs.NeuroFeedbackProgram
+import android.view.LayoutInflater
+import android.view.ViewGroup
 
 object ProgramListFragment {
 
@@ -50,7 +51,11 @@ class ProgramListFragment extends ListFragment {
       setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION))
     }
   }
-
+    override def onCreateView(inflater:LayoutInflater, container:ViewGroup, savedInstanceState:Bundle):View = {
+      
+        // Must implement this BEFORE trying to inflate a layout with it in Robolectric!
+        return inflater.inflate(R.layout.program_list_view, container, false);
+    }
   override def onAttach(activity: Activity) {
     super.onAttach(activity)
     if (!(activity.isInstanceOf[Callbacks])) {

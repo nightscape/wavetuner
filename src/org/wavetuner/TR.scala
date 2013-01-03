@@ -8,7 +8,7 @@ case class TypedResource[T](id: Int)
 case class TypedLayout(id: Int)
 
 object TR {
-  val programsView = TypedResource[ListView](R.id.programsListView)
+  val programsView = TypedResource[ListView](R.id.program_list_view)
 }
 trait TypedViewHolder {
   def findViewById( id: Int ): View

@@ -1,4 +1,4 @@
-package android.scala.reactive
+package org.wavetuner.react
 
 import scala.react.SchedulerModule
 import scala.react.Domain

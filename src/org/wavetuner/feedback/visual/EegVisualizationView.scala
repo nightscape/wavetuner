@@ -10,7 +10,7 @@ import android.graphics.Rect
 import org.wavetuner.programs.WaveTunerPrograms
 import org.wavetuner.programs.FunctionHelpers
 
-import android.scala.reactive.AndroidDomain._
+import org.wavetuner.react.AndroidDomain._
 
 class EegVisualizationView(context: Context, attrs: AttributeSet) extends View(context, attrs) with Observing {
   var height: Int = 20

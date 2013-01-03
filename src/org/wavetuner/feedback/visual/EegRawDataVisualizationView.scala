@@ -10,7 +10,7 @@ import android.graphics.Rect
 import org.wavetuner.programs.WaveTunerPrograms
 import org.wavetuner.programs.FunctionHelpers
 import android.graphics.Path
-import android.scala.reactive.AndroidDomain._
+import org.wavetuner.react.AndroidDomain._
 
 class EegRawDataVisualizationView(context: Context, attrs: AttributeSet) extends View(context, attrs) with Function1[Int, Unit] with Observing {
   val maxNumberOfPoints = 500

@@ -18,8 +18,8 @@ import org.wavetuner.programs.WaveTunerPrograms
 import org.wavetuner.feedback.audio.SoundPlayer
 import org.wavetuner.eeg.MockMeasurementSeries
 import org.wavetuner.eeg.EegMeasurementSeries
-import android.scala.reactive.AndroidDomain._
-import android.scala.reactive.ReactiveHandler
+import org.wavetuner.react.AndroidDomain._
+import org.wavetuner.react.ReactiveHandler
 
 class ProgramListActivity extends FragmentActivity with ProgramListFragment.Callbacks with Observing {
   import TypedResource._
@@ -27,17 +27,16 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
   def measurement = WaveTunerPrograms.measurement
   var currentDeviceStateObserver: Option[Observer] = None
 
-  private var mTwoPane: Boolean = _
+  lazy val isTwoPane: Boolean = findViewById(R.id.program_detail_container) != null
 
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
     setVolumeControlStream(AudioManager.STREAM_MUSIC);
     WaveTunerPrograms.initialize(new SoundPlayer(this))
 
-    setContentView(R.layout.activity_program_list)
-    if (findViewById(R.id.program_detail_container) != null) {
-      mTwoPane = true
-      getSupportFragmentManager.findFragmentById(R.id.program_list).asInstanceOf[ProgramListFragment]
+    setContentView(R.layout.program_list_fragment)
+    if (isTwoPane) {
+      getSupportFragmentManager.findFragmentById(R.id.program_list_fragment).asInstanceOf[ProgramListFragment]
         .setActivateOnItemClick(true)
     }
   }
@@ -77,7 +76,7 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
   }
   def startMeasuring {
     invalidateOptionsMenu()
-    WaveTunerPrograms.measurement.startMeasuring
+    WaveTunerPrograms.measurement.start
   }
   implicit def function2ViewOnItemClickListener[T <: android.widget.Adapter](f: (AdapterView[_], View, Int, Long) => Unit): AdapterView.OnItemClickListener = {
 
@@ -89,7 +88,7 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
 
   }
   override def onItemSelected(id: String) {
-    if (mTwoPane) {
+    if (isTwoPane) {
       val arguments = new Bundle()
       arguments.putString(ProgramDetailFragment.ARG_ITEM_ID, id)
       val fragment = new ProgramDetailFragment()

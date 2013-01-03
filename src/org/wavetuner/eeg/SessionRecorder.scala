@@ -1,6 +1,6 @@
 package org.wavetuner.eeg
 
-import android.scala.reactive.AndroidDomain._
+import org.wavetuner.react.AndroidDomain._
 import android.os.Environment
 import java.io.File
 import java.io._

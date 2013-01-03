@@ -4,7 +4,7 @@ import com.neurosky.thinkgear.TGDevice._
 import android.os.Handler
 import android.os.Message
 import scala.util.Random
-import android.scala.reactive.AndroidDomain
+import org.wavetuner.react.AndroidDomain
 
 class MockMeasurementSeries extends Handler with MeasurementSeries {
 
@@ -22,7 +22,7 @@ class MockMeasurementSeries extends Handler with MeasurementSeries {
     }
     AndroidDomain.engine.runTurn
   }
-  def startMeasuring {
+  def start {
     sendEmptyMessageDelayed(0, 1000)
     sendEmptyMessageDelayed(1, 10)
     this.deviceStateChanges << STATE_CONNECTED

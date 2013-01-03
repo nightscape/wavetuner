@@ -12,9 +12,9 @@ import scala.collection.JavaConversions._
 import android.widget.ImageButton
 import org.wavetuner.programs.NeuroFeedbackProgram
 import android.view.WindowManager
-import android.scala.reactive.AndroidDomain._
+import org.wavetuner.react.AndroidDomain._
 import org.wavetuner.eeg.SessionRecorder
-import android.scala.reactive.AndroidDomain
+import org.wavetuner.react.AndroidDomain
 
 object ProgramDetailFragment {
 
@@ -40,7 +40,7 @@ class ProgramDetailFragment extends Fragment with ListenerConversions with Obser
   }
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
-    val rootView = inflater.inflate(R.layout.fragment_program_detail, container, false)
+    val rootView = inflater.inflate(R.layout.program_detail_fragment, container, false)
     val textView = rootView.findViewById(R.id.program_detail).asInstanceOf[TextView]
     if (mItem != null) {
       textView.setText(mItem.toString())

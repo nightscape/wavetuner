@@ -8,7 +8,7 @@ import org.wavetuner.eeg.Measurement
 import org.wavetuner.feedback.Feedback
 import org.wavetuner.EegChannels
 import org.wavetuner.programs.evaluations.Evaluation
-import android.scala.reactive.AndroidDomain._
+import org.wavetuner.react.AndroidDomain._
 import org.wavetuner.feedback.Reward
 
 class NeuroFeedbackProgram(val evaluation: Evaluation, val measurement: MeasurementSeries, val feedback: Feedback) extends Observing {

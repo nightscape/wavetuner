@@ -1,8 +1,8 @@
-package android.scala.reactive
+package org.wavetuner.react
 
 import android.os.Handler
 import android.os.Message
-import android.scala.reactive.AndroidDomain._
+import org.wavetuner.react.AndroidDomain._
 
 object ReactiveHandler extends Handler {
   val messages: EventSource[Message] = EventSource[Message]

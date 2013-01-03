@@ -1,8 +1,8 @@
-package android.scala.reactive.widget
+package org.wavetuner.react.widget
 
 import android.widget.ImageButton
-import android.scala.reactive.AndroidDomain
-import android.scala.reactive.AndroidDomain._
+import org.wavetuner.react.AndroidDomain
+import org.wavetuner.react.AndroidDomain._
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View

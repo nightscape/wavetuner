@@ -10,9 +10,9 @@ import scala.react.Domain
 import android.app.Activity
 import scala.react.EventModule
 import scala.react.SchedulerModule
-import android.scala.reactive.AndroidDomain
-import android.scala.reactive.AndroidDomain._
-import android.scala.reactive.ReactiveHandler
+import org.wavetuner.react.AndroidDomain
+import org.wavetuner.react.AndroidDomain._
+import org.wavetuner.react.ReactiveHandler
 import android.bluetooth.BluetoothAdapter
 
 trait MeasurementSeries extends Handler with Observing {
@@ -28,7 +28,7 @@ trait MeasurementSeries extends Handler with Observing {
 
   val rawData = Var[Int](0)
 
-  def startMeasuring: Unit
+  def start
 }
 
 class EegMeasurementSeries extends Handler with MeasurementSeries {
@@ -53,7 +53,7 @@ class EegMeasurementSeries extends Handler with MeasurementSeries {
     }
 
   }
-  def startMeasuring {
+  def start() {
     val btAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     if (btAdapter != null) {
       val tgDevice = new TGDevice(btAdapter, ReactiveHandler)

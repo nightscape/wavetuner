@@ -10,7 +10,7 @@
     tools:context=".ProgramListActivity">
 
     <fragment android:name="org.wavetuner.ProgramListFragment"
-        android:id="@+id/program_list"
+        android:id="@+id/program_list_fragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1" />
