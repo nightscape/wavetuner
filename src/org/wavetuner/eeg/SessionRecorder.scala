@@ -29,7 +29,7 @@ object SessionRecorder {
 
 class SessionRecorder[T](observable: Signal[T], sessionName: String = "")(implicit val formatter: Formatter[T]) extends Observing {
   val dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss")
-  def listen(start: Events[_], stop: Events[_]) {
+  def listen(start: Events[_], stop: Events[_]):Reactor = {
     Reactor.loop { self =>
       self await start
       val logFile = new File(path, sessionName + "_" + dateFormatter.format(new Date()) + ".txt")

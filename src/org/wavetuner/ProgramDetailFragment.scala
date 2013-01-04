@@ -48,6 +48,7 @@ class ProgramDetailFragment extends Fragment with ListenerConversions with Obser
     val btnPlay = rootView.findViewById(R.id.btnPlay).asInstanceOf[ImageButton]
 
     val reactor = mItem.observeRunStateChanges(started, stopped)
+    val recorderReactor = SessionRecorder.forRawData(WaveTunerPrograms.measurement).listen(started, stopped)
     var isRunning = false
     btnPlay.setOnClickListener { v: View =>
       if (!isRunning) {
@@ -62,6 +63,7 @@ class ProgramDetailFragment extends Fragment with ListenerConversions with Obser
         isRunning = false
       }
       reactor.engine.runTurn
+      recorderReactor.engine.runTurn
     }
     rootView
   }
