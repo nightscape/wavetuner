@@ -23,7 +23,6 @@ import org.wavetuner.react.ReactiveHandler
 
 class ProgramListActivity extends FragmentActivity with ProgramListFragment.Callbacks with Observing {
   import TypedResource._
-  import TR._
   def measurement = WaveTunerPrograms.measurement
   var currentDeviceStateObserver: Option[Observer] = None
 

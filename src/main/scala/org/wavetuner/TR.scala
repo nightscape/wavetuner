@@ -7,9 +7,7 @@ import android.view.View.OnClickListener
 case class TypedResource[T](id: Int)
 case class TypedLayout(id: Int)
 
-object TR {
-  val programsView = TypedResource[ListView](R.id.program_list_view)
-}
+
 trait TypedViewHolder {
   def findViewById( id: Int ): View
   def findView[T](tr: TypedResource[T]) = findViewById(tr.id).asInstanceOf[T]

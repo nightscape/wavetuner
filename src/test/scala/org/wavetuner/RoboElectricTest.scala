@@ -40,8 +40,13 @@ class RoboElectricTest {
   def shouldRecordData() {
     val measurement = new TestMeasurement
     WaveTunerPrograms.measurement = measurement
-    programList.setSelection(0)
-    programList.callOnClick()
+    val programDetailActivity = new ProgramDetailActivity()
+    val intent = new Intent()
+    intent.putExtra(ProgramDetailFragment.ARG_ITEM_ID, "Increase Attention")
+    shadowOf(programDetailActivity).setIntent(intent)
+    programDetailActivity.onCreate(null)
+    val btnPlay = programDetailActivity.findViewById(R.id.btnPlay).asInstanceOf[ImageButton]
+    btnPlay.performClick()
     val raw = List(1, 5, 2, 4, 3)
     raw.foreach(measurement.observeRawData(_))
 

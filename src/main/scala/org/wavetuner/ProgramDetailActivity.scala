@@ -10,10 +10,10 @@ import scala.collection.JavaConversions._
 
 class ProgramDetailActivity extends FragmentActivity {
 
-  protected override def onCreate(savedInstanceState: Bundle) {
+  override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_program_detail)
-    getActionBar.setDisplayHomeAsUpEnabled(true)
+    Option(getActionBar).foreach(_.setDisplayHomeAsUpEnabled(true))
     if (savedInstanceState == null) {
       val arguments = new Bundle()
       arguments.putString(ProgramDetailFragment.ARG_ITEM_ID, getIntent.getStringExtra(ProgramDetailFragment.ARG_ITEM_ID))

@@ -14,6 +14,7 @@ import org.wavetuner.react.AndroidDomain
 import org.wavetuner.react.AndroidDomain._
 import org.wavetuner.react.ReactiveHandler
 import android.bluetooth.BluetoothAdapter
+import scala.collection.mutable.Queue
 
 trait MeasurementSeries extends Handler with Observing {
 
@@ -21,12 +22,19 @@ trait MeasurementSeries extends Handler with Observing {
   val meditation = Var[Int](0)
   val power = Var[TGEegPower](new TGEegPower)
   val measurements: Signal[Measurement] = Signal.flow(Measurement.zero) { self =>
-    self() = self.previous.progress(power(), attention(), meditation())
+    val rawDataQueue = rawSequence.now
+    val rawDataSequence = rawDataQueue.toArray
+    rawDataQueue.clear
+    self() = self.previous.progress(power(), attention(), meditation(), rawDataSequence)
   }
 
   val deviceStateChanges = EventSource[Int]
 
   val rawData = Var[Int](0)
+  val rawSequence: Signal[Queue[Int]] = Signal.flow(Queue[Int]()) { self =>
+    self.previous.enqueue(rawData())
+    self() = self.previous
+  }
 
   def start
 }

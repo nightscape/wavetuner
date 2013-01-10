@@ -33,18 +33,18 @@ object Measurement {
     TimeSeries(0.0f), new TGEegPower)
   def random = zero.progress(randomPower, Random.nextFloat, Random.nextFloat)
   val valueExtractors: Map[String, Measurement => Float] = ListMap(
-    "meditation" -> { m: Measurement => m.meditation },
-    "attention" -> { m: Measurement => m.attention },
-    "delta" -> { m: Measurement => m.delta },
-    "theta" -> { m: Measurement => m.theta },
-    "lowAlpha" -> { m: Measurement => m.lowAlpha },
-    "highAlpha" -> { m: Measurement => m.highAlpha },
-    "lowBeta" -> { m: Measurement => m.lowBeta },
-    "highBeta" -> { m: Measurement => m.highBeta },
-    "lowGamma" -> { m: Measurement => m.lowGamma },
-    "midGamma" -> { m: Measurement => m.midGamma })
+    "meditation" -> { _.meditation },
+    "attention" -> { _.attention },
+    "delta" -> { _.delta },
+    "theta" -> { _.theta },
+    "lowAlpha" -> { _.lowAlpha },
+    "highAlpha" -> { _.highAlpha },
+    "lowBeta" -> { _.lowBeta },
+    "highBeta" -> { _.highBeta },
+    "lowGamma" -> { _.lowGamma },
+    "midGamma" -> { _.midGamma })
 
-  val valueNames = valueExtractors.keys
+  val valueNames = valueExtractors.keys.toList
   val valueExtensions = List(
     "longTerm", "relativeToMaxPower", "relativeToHistory", "longTermRelativeToMaxPower")
 }
@@ -85,7 +85,9 @@ case class Measurement(
   val highBetaMeasure: TimeSeries = TimeSeries(),
   val lowGammaMeasure: TimeSeries = TimeSeries(),
   val midGammaMeasure: TimeSeries = TimeSeries(),
-  val powers: TGEegPower = new TGEegPower) {
+  val powers: TGEegPower = new TGEegPower,
+  val raw: Array[Int] = Array[Int]()
+  ) {
   def meditation = meditationMeasure.current
   def attention = attentionMeasure.current
   def delta = deltaMeasure.current
@@ -102,7 +104,7 @@ case class Measurement(
   lazy val maximumFrequencyPower: Float = allFrequencyPowers.max
   lazy val allAbsolutePowers: Array[Float] = powers.allFrequencyPowers
   lazy val maximumAbsolutePower: Float = powers.maximumFrequencyPower
-  def progress(powers: TGEegPower = this.powers, attention: Float = this.attentionMeasure.current, meditation: Float = this.meditationMeasure.current): Measurement =
+  def progress(powers: TGEegPower = this.powers, attention: Float = this.attentionMeasure.current, meditation: Float = this.meditationMeasure.current, raw: Array[Int] = Array()): Measurement =
     Measurement(
       meditationMeasure.progress(meditation),
       attentionMeasure.progress(attention),
@@ -114,6 +116,7 @@ case class Measurement(
       highBetaMeasure.progress(powers.highBeta, powers),
       lowGammaMeasure.progress(powers.lowGamma, powers),
       midGammaMeasure.progress(powers.midGamma, powers),
-      powers)
+      powers,
+      raw)
   def toList: List[Float] = Measurement.valueExtractors.values.map(e => e(this)).toList
 }
