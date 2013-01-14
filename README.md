@@ -25,3 +25,6 @@ Programs
 * Attention & Meditation: This program has two distinct sounds for meditation ("ocean" sound) and attention ("union" sound)
 * Simple Alpha-Theta: This is a rather naive implementation of the Alpha-Theta protocol which should lead you into a hypnotic state. Try to get both the ocean and the unity sound as loud as possible.
 * Insight: This is similar to Alpha-Theta but has only one sound that gets louder when Alpha, Theta and Gamma (which seems to have a correspondence to intuition and sudden insights) are high.
+* Increase XYZ: Trains one specific value.
+
+For those of you that dare to read the code you can find all programs [here](https://github.com/nightscape/wavetuner/tree/master/src/main/scala/org/wavetuner/programs/evaluations).
