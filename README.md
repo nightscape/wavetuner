@@ -28,3 +28,8 @@ Programs
 * Increase XYZ: Trains one specific value.
 
 For those of you that dare to read the code you can find all programs [here](https://github.com/nightscape/wavetuner/tree/master/src/main/scala/org/wavetuner/programs/evaluations).
+
+License
+-------
+
+{ placeholder for BSD or MIT license text }
