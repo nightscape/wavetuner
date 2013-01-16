@@ -7,6 +7,7 @@
 *.log
 *.fuse_hidden*
 *.class
+.DS_Store
 
 # sbt specific
 dist/*
