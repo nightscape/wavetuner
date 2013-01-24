@@ -29,6 +29,13 @@ Programs
 
 For those of you that dare to read the code you can find all programs [here](https://github.com/nightscape/wavetuner/tree/master/src/main/scala/org/wavetuner/programs/evaluations).
 
+Getting Help
+------------
+
+Have a look at the [known issues](https://github.com/nightscape/wavetuner/issues) first.
+If you have a problem that is not listed here you can join the [Wavetuner group](https://groups.google.com/forum/?fromgroups#!forum/wavetuner)
+and ask over there.
+
 License
 -------
 
