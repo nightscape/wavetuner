@@ -1,4 +1,4 @@
-wavetuner
+WaveTuner
 =========
 
 WaveTuner is an Android NeuroFeedback app using a Neurosky Mindwave Mobile to train your brain.
@@ -35,6 +35,23 @@ Getting Help
 Have a look at the [known issues](https://github.com/nightscape/wavetuner/issues) first.
 If you have a problem that is not listed here you can join the [Wavetuner group](https://groups.google.com/forum/?fromgroups#!forum/wavetuner)
 and ask over there.
+
+Build Instructions
+------------------
+
+To build Wavetuner you need Eclipse and several additional plugins:
+
+1. Download [Eclipse 4.2](http://download.eclipse.org/eclipse/downloads/)
+2. In Eclipse go to Menu -> Install new software
+3. In the "Work with" text field paste the following link: http://download.scala-ide.org/sdk/e38/scala210/stable/site
+4. Under "Scala IDE for Eclipse" select "Scala IDE for Eclipse", click on next and follow the installation instructions.
+5. Repeat steps 2-4 with https://androidproguardscala.s3.amazonaws.com/UpdateSiteForAndroidProguardScala and "AndroidProguardScala"
+6. Repeat steps 2-4 with http://dl.google.com/eclipse/plugin/4.2 and "Developer Tools" -> "Android Development Tools" and "Google plugin for Eclipse (required)" -> "Google Plugin for Eclipse 4.2"
+7. Git Clone WaveTuner into your workspace
+8. Import WaveTuner in Eclipse via "File" -> "Import" -> "Existing projects into workspace"
+9. Now when you right click on the WaveTuner project you should be able to "Run as" -> "Android application"
+
+
 
 License
 -------
