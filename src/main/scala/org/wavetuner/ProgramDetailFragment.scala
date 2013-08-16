@@ -41,9 +41,8 @@ class ProgramDetailFragment extends Fragment with ListenerConversions with Obser
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
     val rootView = inflater.inflate(R.layout.program_detail_fragment, container, false)
-    val textView = rootView.findViewById(R.id.program_detail).asInstanceOf[TextView]
     if (mItem != null) {
-      textView.setText(mItem.toString())
+      getActivity().setTitle(mItem.toString())
     }
     val btnPlay = rootView.findViewById(R.id.btnPlay).asInstanceOf[ImageButton]
 

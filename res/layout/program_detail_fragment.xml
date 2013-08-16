@@ -5,15 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/program_detail"
-        style="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="fill_vertical"
-        android:padding="16dp"
-        tools:context=".ProgramDetailFragment" />
-
 	<org.wavetuner.feedback.visual.EegVisualizationView
 	    android:layout_width="match_parent"
 	    android:layout_height="0dip"
