@@ -42,6 +42,7 @@ class ProgramListActivity extends FragmentActivity with ProgramListFragment.Call
 //  override def onStart = super.onStart; startMeasuring
 
   override def onPrepareOptionsMenu(menu: Menu): Boolean = {
+    menu.clear()
     getMenuInflater().inflate(R.menu.activity_main, menu)
     currentDeviceStateObserver.foreach(_.dispose)
     currentDeviceStateObserver = Some(installConnectionItemObserver(menu.findItem(R.id.menu_connect_thinkgear)))
