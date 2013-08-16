@@ -13,7 +13,6 @@ import org.wavetuner.programs.FunctionHelpers
 import org.wavetuner.react.AndroidDomain._
 
 class EegVisualizationView(context: Context, attrs: AttributeSet) extends View(context, attrs) with Observing {
-  var height: Int = 20
   var currentMeasurement: Measurement = Measurement.random
   observe(WaveTunerPrograms.measurement.measurements) { measurement =>
     currentMeasurement = measurement
