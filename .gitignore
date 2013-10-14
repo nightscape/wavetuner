@@ -8,6 +8,8 @@
 *.fuse_hidden*
 *.class
 .DS_Store
+.classpath
+.settings
 
 # sbt specific
 dist/*
