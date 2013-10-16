@@ -1,6 +1,7 @@
 package org.wavetuner.feedback.visual
 
 import android.view.View
+import android.graphics.Color
 import android.content.Context
 import android.util.AttributeSet
 import org.wavetuner.eeg.Measurement
@@ -21,12 +22,12 @@ class EegRawDataVisualizationView(context: Context, attrs: AttributeSet) extends
   currentData.enqueue(exampleData: _*)
   observe(WaveTunerPrograms.measurement.rawData)(this)
   val paint = new Paint()
-  paint.setARGB(255, 255, 0, 0)
+  paint.setARGB(255, 0, 0, 0)
   paint.setStyle(Paint.Style.STROKE)
 
   override def draw(canvas: Canvas) {
     super.draw(canvas)
-    val scaleY = 80.0f / (max - min)
+    val scaleY = canvas.getHeight().toFloat / (max - min)
     val scaleX = canvas.getWidth().toFloat / maxNumberOfPoints
     val scaledData = currentData.map(y => (y - min) * scaleY)
     val path = new Path()

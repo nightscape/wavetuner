@@ -13,14 +13,13 @@ import org.wavetuner.programs.FunctionHelpers
 import org.wavetuner.react.AndroidDomain._
 
 class EegVisualizationView(context: Context, attrs: AttributeSet) extends View(context, attrs) with Observing {
-  var height: Int = 20
   var currentMeasurement: Measurement = Measurement.random
   observe(WaveTunerPrograms.measurement.measurements) { measurement =>
     currentMeasurement = measurement
     invalidate()
   }
   val letters = Array("δ", "θ", "α↓", "α↑", "β↓", "β↑", "γ↓", "γ→")
-  val textSize = 30.0f
+  val textSize = 10.0f
   val paints = letters.indices.map(paintFor(_))
   val black = new Paint()
   black.setARGB(255, 0, 0, 0)
