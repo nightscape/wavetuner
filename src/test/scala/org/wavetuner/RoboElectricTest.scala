@@ -1,55 +1,48 @@
 package org.wavetuner
 
-import com.xtremelabs.robolectric.RobolectricTestRunner
+import org.robolectric.RobolectricTestRunner
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.scalatest.matchers.ShouldMatchers
 import org.wavetuner.eeg.MeasurementSeries
 import org.wavetuner.programs.WaveTunerPrograms
-import org.wavetuner.react.AndroidDomain
+import android.scala.reactive.AndroidDomain
 import android.widget.Button
 import org.junit.Before
 import android.widget.ListView
 
-class TestMeasurement extends MeasurementSeries {
-  def start {}
-  def observeRawData(rawData: Int) {
-    this.rawData() = rawData
-    AndroidDomain.engine.runTurn
-  }
-}
 @RunWith(classOf[RobolectricTestRunner])
 class RoboElectricTest {
   import org.scalatest.matchers.ShouldMatchers._
+	class TestMeasurement extends MeasurementSeries {
+	  def startMeasuring {}
+	  def observeRawData(rawData:Int) {
+	    this.rawData()= rawData
+	    AndroidDomain.engine.runTurn
+	  }
+	}
+    @Test
+    def shouldHaveHappySmiles()  {
+        val appName = new ProgramListActivity().getResources().getString(R.string.app_name)
+        appName should equal("WaveTuner")
+    }
+    var activity:ProgramListActivity = null
+    def programList = activity.findViewById(R.id.program_list).asInstanceOf[ListView]
 
-  @Test
-  def shouldHaveHappySmiles() {
-    val appName = new ProgramListActivity().getResources().getString(R.string.app_name)
-    assert(appName == "WaveTuner")
-  }
-  var activity: ProgramListActivity = null
-  def programList = activity.findViewById(R.id.program_list_view).asInstanceOf[ListView]
+    @Before
+    def setUp() {
+        activity = new ProgramListActivity();
+        activity.onCreate(null);
+    }
 
-  @Before
-  def setUp() {
-    activity = new ProgramListActivity();
-    activity.onCreate(null);
-  }
-
-  @Test
-  def shouldRecordData() {
-    val measurement = new TestMeasurement
-    WaveTunerPrograms.measurement = measurement
-    val programDetailActivity = new ProgramDetailActivity()
-    val intent = new Intent()
-    intent.putExtra(ProgramDetailFragment.ARG_ITEM_ID, "Increase Attention")
-    shadowOf(programDetailActivity).setIntent(intent)
-    programDetailActivity.onCreate(null)
-    val btnPlay = programDetailActivity.findViewById(R.id.btnPlay).asInstanceOf[ImageButton]
-    btnPlay.performClick()
-    val raw = List(1, 5, 2, 4, 3)
-    raw.foreach(measurement.observeRawData(_))
-
-  }
+    @Test
+    def shouldRecordData()  {
+      val measurement = new TestMeasurement
+      WaveTunerPrograms.measurement = measurement
+      programList.setSelection(0)
+      programList.callOnClick()
+      val raw = List(1,5,2,4,3)
+      raw.foreach(measurement.observeRawData(_))
+    }
 }
 

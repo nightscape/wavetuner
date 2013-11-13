@@ -8,8 +8,8 @@
 *.fuse_hidden*
 *.class
 .DS_Store
-.classpath
-.settings
+
+local.properties
 
 # sbt specific
 dist/*
@@ -21,3 +21,12 @@ project/plugins/project/
 
 # Scala-IDE specific
 .scala_dependencies
+.history
+.classpath
+.settings
+.project
+.externalToolBuilders/
+
+tmp/
+/.target
+target/

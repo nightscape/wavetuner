@@ -21,7 +21,6 @@ abstract class Domain extends ReactiveModule
     System.getProperty("scala.react.debug", "no").toLowerCase match {
       case "no" => new NilDebug[this.type](domain)
       case "print" => new ConsoleDebug[this.type](this)
-      case "log" => new monitor.LogDebug[this.type](this)
     }
 
   /**

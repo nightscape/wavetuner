@@ -2,7 +2,6 @@ package scala.react
 
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.{ Executors, ExecutorService }
-import javax.swing.SwingUtilities
 
 trait SchedulerModule { self: Domain =>
 
@@ -71,10 +70,4 @@ trait SchedulerModule { self: Domain =>
     protected def schedule(r: Runnable) = pool.execute(r)
   }
 
-  /**
-   * A scheduler running turns on the Swing event dispatcher thread (EDT).
-   */
-  class SwingScheduler extends ThreadSafeScheduler {
-    def schedule(r: Runnable) = SwingUtilities.invokeLater(r)
-  }
 }
